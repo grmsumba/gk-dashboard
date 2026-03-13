@@ -1,0 +1,57 @@
+// ═══════════════════════════════════════════════════════════════
+// GK NORTH STAR — Google Apps Script
+// Paste this entire file into Apps Script (script.google.com)
+// Deploy as Web App → Anyone → Copy the URL into the dashboard
+// ═══════════════════════════════════════════════════════════════
+
+function doGet(e) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const output = {
+    guests: getSheetData(ss, 'Guests'),
+    gkPairs: getSheetData(ss, 'GK Pairs'),
+    timestamp: new Date().toISOString()
+  };
+  return ContentService
+    .createTextOutput(JSON.stringify(output))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getSheetData(ss, sheetName) {
+  const sheet = ss.getSheetByName(sheetName);
+  if (!sheet) return [];
+  const [headers, ...rows] = sheet.getDataRange().getValues();
+  return rows
+    .filter(row => row.some(cell => cell !== ''))
+    .map(row => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        const key = h.toString().trim().toLowerCase().replace(/\s+/g, '_');
+        let val = row[i];
+        // Parse pipe-separated lists into arrays
+        if (typeof val === 'string' && val.includes('|')) {
+          val = val.split('|').map(v => v.trim()).filter(Boolean);
+        }
+        // Parse alert objects: "red:CRITICAL message|yellow:note"
+        if (key === 'alerts' && typeof val === 'string' && val !== '') {
+          val = val.split('|').map(a => {
+            const colon = a.indexOf(':');
+            return colon > -1
+              ? { l: a.slice(0, colon).trim(), msg: a.slice(colon + 1).trim() }
+              : { l: 'yellow', msg: a.trim() };
+          }).filter(a => a.msg);
+        } else if (key === 'alerts' && Array.isArray(val)) {
+          val = val.map(a => {
+            const colon = a.indexOf(':');
+            return colon > -1
+              ? { l: a.slice(0, colon).trim(), msg: a.slice(colon + 1).trim() }
+              : { l: 'yellow', msg: a.trim() };
+          }).filter(a => a.msg);
+        }
+        // Booleans
+        if (val === 'TRUE' || val === true) val = true;
+        if (val === 'FALSE' || val === false) val = false;
+        obj[key] = val;
+      });
+      return obj;
+    });
+}

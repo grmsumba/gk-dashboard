@@ -118,7 +118,18 @@ select,input[type=text]{width:100%;padding:10px 12px;border:1px solid #ddd;borde
 .dining-name{font-weight:600;font-size:13px;color:#dc2626}
 .dining-detail{font-size:12px;color:#555;margin-top:4px}
 .empty-state{text-align:center;padding:32px 16px;color:#aaa;font-size:13px}
-/* BOOKING CARDS */
+/* NOTICE BOARD */
+.notice-board{margin-bottom:14px}
+.notice-card{border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px}
+.notice-card.type-alert{background:#fee2e2;border:1px solid #fca5a5}
+.notice-card.type-promo{background:#ede9fe;border:1px solid #c4b5fd}
+.notice-card.type-practitioner{background:#d1fae5;border:1px solid #6ee7b7}
+.notice-card.type-operational{background:#fef9c3;border:1px solid #fde047}
+.notice-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.notice-title{font-size:13px;font-weight:600;color:#1a1a1a}
+.notice-body{font-size:12px;color:#444;margin-top:2px;line-height:1.5}
+.notice-meta{font-size:11px;color:#888;margin-top:3px}
+.notice-board-empty{display:none}
 .booking-card{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;border:1px solid #e5e5e5;border-left:3px solid #1a1a1a}
 .booking-card.meal{border-left-color:#f97316}
 .booking-card.special{border-left-color:#dc2626}
@@ -182,6 +193,7 @@ select,input[type=text]{width:100%;padding:10px 12px;border:1px solid #ddd;borde
 <!-- DASHBOARD -->
 <div class="section active" id="section-dashboard">
   <div id="config-area"></div>
+  <div id="notice-board"></div>
   <div class="selector-bar">
     <div class="selector-label">Guest Kapten Pair</div>
     <select id="gk-select" onchange="renderDashboard();renderBookings()">
@@ -321,6 +333,7 @@ let SHEETS_API_URL = localStorage.getItem(STORAGE_KEY) || '';
 let liveGuests = [];
 let liveGKPairs = [];
 let liveActivities = [];
+let liveNotices = [];
 let dataLoaded = false;
 let lastFetched = null;
 
@@ -453,6 +466,7 @@ function useData(guests, pairs) {
   populateGKSelect(pairs);
   renderDashboard();
   renderBookings();
+  renderNoticeBoard();
 }
 
 function renderConfigBanner() {
@@ -734,6 +748,55 @@ function buildKnowledge() {
     + weeklyDining.map(d => `<div class="dining-card"><div class="dining-name">${d.day} · ${d.name}</div><div class="dining-detail">⏰ ${d.time}</div><div class="dining-detail">${d.desc}</div></div>`).join('');
 }
 
+// ── NOTICE BOARD ─────────────────────────────────────────────────
+function renderNoticeBoard() {
+  const el = document.getElementById('notice-board');
+  if (!el) return;
+
+  const active = liveNotices.filter(n => {
+    if (!n.title && !n.message) return false;
+    // Check expiry date if set
+    if (n.expires && n.expires !== '') {
+      const exp = parseSheetDate(n.expires);
+      if (exp && exp < TODAY) return false;
+    }
+    return true;
+  });
+
+  if (active.length === 0) { el.innerHTML = ''; return; }
+
+  const typeConfig = {
+    alert:         { icon: '🚨', cls: 'type-alert' },
+    promo:         { icon: '🌟', cls: 'type-promo' },
+    practitioner:  { icon: '🧘', cls: 'type-practitioner' },
+    operational:   { icon: '📋', cls: 'type-operational' },
+  };
+
+  el.innerHTML = active.map(n => {
+    const t = (n.type || 'operational').toString().trim().toLowerCase();
+    const cfg = typeConfig[t] || typeConfig.operational;
+    const expires = n.expires && n.expires !== ''
+      ? `<div class="notice-meta">Until ${n.expires}</div>` : '';
+    return `<div class="notice-card ${cfg.cls}">
+      <div class="notice-icon">${cfg.icon}</div>
+      <div>
+        <div class="notice-title">${n.title || ''}</div>
+        ${n.message ? `<div class="notice-body">${n.message}</div>` : ''}
+        ${expires}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function parseSheetDate(str) {
+  if (!str) return null;
+  const months = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  const m = String(str).trim().match(/(\d{1,2})-([a-zA-Z]{3})-(\d{2,4})/);
+  if (!m) return null;
+  const yr = m[3].length === 2 ? 2000 + parseInt(m[3]) : parseInt(m[3]);
+  return new Date(yr, months[m[2].toLowerCase()], parseInt(m[1]));
+}
+
 // ── BOOKINGS ─────────────────────────────────────────────────────
 function renderBookings() {
   const gk  = document.getElementById('gk-select').value;
@@ -834,7 +897,7 @@ const GUEST_CACHE_TS  = 'gk_guest_cache_ts';
 
 function saveGuestCache(guests, pairs) {
   try {
-    localStorage.setItem(GUEST_CACHE_KEY, JSON.stringify({guests, pairs, activities: liveActivities}));
+    localStorage.setItem(GUEST_CACHE_KEY, JSON.stringify({guests, pairs, activities: liveActivities, notices: liveNotices}));
     localStorage.setItem(GUEST_CACHE_TS, new Date().toISOString());
   } catch(e) {}
 }
@@ -865,6 +928,7 @@ async function fetchLiveData(force = false) {
       setSyncStatus('error', 'Offline · cached ' + ago);
       document.getElementById('last-updated-text').textContent = 'Cached data from ' + ago;
       liveActivities = cache.data.activities || [];
+      liveNotices    = cache.data.notices    || [];
       useData(cache.data.guests, cache.data.pairs);
     } else {
       setSyncStatus('error', 'Offline – no cache');
@@ -883,6 +947,7 @@ async function fetchLiveData(force = false) {
     const guests = (data.guests || []).map(normaliseGuest);
     const pairs  = (data.gkPairs || []).map(r => r.pair_name || r.name || Object.values(r)[0]).filter(Boolean);
     liveActivities = data.activities || [];
+    liveNotices    = data.notices    || [];
 
     liveGuests  = guests;
     liveGKPairs = pairs.length ? pairs : [...new Set(guests.map(g => g.gk_pair).filter(Boolean))];
@@ -904,6 +969,7 @@ async function fetchLiveData(force = false) {
       setSyncStatus('error', 'Offline · cached ' + ago);
       document.getElementById('last-updated-text').textContent = 'Cached data from ' + ago;
       liveActivities = cache.data.activities || [];
+      liveNotices    = cache.data.notices    || [];
       useData(cache.data.guests, cache.data.pairs);
     } else {
       setSyncStatus('error', 'Cannot connect');

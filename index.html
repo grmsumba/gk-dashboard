@@ -1,57 +1,586 @@
-// ═══════════════════════════════════════════════════════════════
-// GK NORTH STAR — Google Apps Script
-// Paste this entire file into Apps Script (script.google.com)
-// Deploy as Web App → Anyone → Copy the URL into the dashboard
-// ═══════════════════════════════════════════════════════════════
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GK North Star — NIHI Sumba</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f5f4f0;color:#1a1a1a;font-size:15px}
+/* NAV */
+.topbar{background:#1a1a1a;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;position:sticky;top:0;z-index:100}
+.topbar-title{font-size:16px;font-weight:600;letter-spacing:0.02em}
+.topbar-date{font-size:12px;color:#aaa}
+.nav-tabs{display:flex;gap:4px;padding:0 16px;background:#fff;border-bottom:1px solid #e5e5e5;overflow-x:auto;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{padding:12px 16px;font-size:13px;font-weight:500;color:#666;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none}
+.nav-tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a}
+/* SECTIONS */
+.section{display:none;padding:16px;max-width:600px;margin:0 auto}
+.section.active{display:block}
+/* GK SELECTOR */
+.selector-bar{background:#fff;border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid #e5e5e5}
+.selector-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+select,input[type=text]{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;appearance:none;-webkit-appearance:none}
+.shift-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.shift-btn{padding:9px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;background:#fff;color:#666;transition:all 0.2s}
+.shift-btn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+/* METRIC STRIP */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.metric{background:#fff;border-radius:10px;padding:12px 10px;text-align:center;border:1px solid #e5e5e5}
+.metric-val{font-size:22px;font-weight:600}
+.metric-label{font-size:11px;color:#888;margin-top:2px}
+.metric-val.red{color:#dc2626}
+/* VILLA CARDS */
+.villa-card{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;border:1px solid #e5e5e5;cursor:pointer;transition:border-color 0.2s}
+.villa-card.alert-red{border-left:3px solid #dc2626}
+.villa-card.alert-orange{border-left:3px solid #f97316}
+.villa-card.alert-yellow{border-left:3px solid #eab308}
+.villa-header{display:flex;justify-content:space-between;align-items:flex-start}
+.villa-name{font-weight:600;font-size:14px}
+.villa-guest{font-size:13px;color:#333;margin-top:2px}
+.villa-meta{font-size:12px;color:#888;margin-top:2px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500;margin-left:6px}
+.badge-green{background:#dcfce7;color:#166534}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-purple{background:#ede9fe;color:#4c1d95}
+.badge-red{background:#fee2e2;color:#991b1b}
+.alert-pills{margin-top:8px}
+.alert-pill{padding:5px 10px;border-radius:6px;font-size:12px;margin-bottom:4px}
+.alert-pill.red{background:#fee2e2;color:#991b1b}
+.alert-pill.orange{background:#ffedd5;color:#9a3412}
+.alert-pill.yellow{background:#fef9c3;color:#854d0e}
+.villa-details{margin-top:12px;padding-top:12px;border-top:1px solid #f0f0f0;display:none}
+.villa-details.open{display:block}
+.detail-section{margin-bottom:10px}
+.detail-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.detail-val{font-size:13px;color:#1a1a1a}
+/* HANDOVER */
+.handover-bar{background:#1a1a1a;color:#fff;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center;cursor:pointer;font-size:13px;font-weight:500}
+/* SECTION CARDS */
+.section-card{background:#fff;border-radius:12px;margin-bottom:10px;border:1px solid #e5e5e5;overflow:hidden}
+.section-card summary{padding:14px 16px;font-weight:600;font-size:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;list-style:none}
+.section-card summary::-webkit-details-marker{display:none}
+.section-card summary .chevron{font-size:12px;color:#888;transition:transform 0.2s}
+.section-card[open] summary .chevron{transform:rotate(180deg)}
+.section-body{padding:14px 16px;border-top:1px solid #f0f0f0}
+/* TEMPLATES */
+.template-text{background:#f8f8f6;border-radius:8px;padding:12px;font-size:13px;white-space:pre-wrap;color:#333;border:1px solid #ebebeb;max-height:200px;overflow-y:auto}
+.copy-btn{margin-top:10px;padding:8px 16px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px}
+.copy-btn:active{opacity:0.8}
+.copy-btn.copied{background:#16a34a}
+/* CHECKLIST */
+.checklist-item{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;gap:10px}
+.checklist-item input[type=checkbox]{width:16px;height:16px;accent-color:#1a1a1a;flex-shrink:0}
+.checklist-item label{font-size:13px;color:#333;cursor:pointer}
+.checklist-item input:checked+label{text-decoration:line-through;color:#aaa}
+.cat-title{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.06em;padding:10px 0 4px}
+/* HIGHLIGHTS */
+.highlight-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0}
+.highlight-item:last-child{border-bottom:none}
+.hi-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.hi-time{font-size:12px;color:#888;margin-top:2px}
+/* LINKS GRID */
+.links-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.link-card{background:#f8f8f6;border-radius:8px;padding:12px;border:1px solid #ebebeb}
+.link-card a{font-size:13px;color:#1a1a1a;text-decoration:none;font-weight:500}
+.link-card a:hover{text-decoration:underline}
+.link-label{font-size:11px;color:#888;margin-bottom:4px}
+/* TABS (invitations) */
+.inv-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px;padding-bottom:4px}
+.inv-tabs::-webkit-scrollbar{display:none}
+.inv-tab{padding:7px 14px;font-size:12px;font-weight:500;border:1px solid #ddd;border-radius:20px;cursor:pointer;background:#fff;color:#666;white-space:nowrap}
+.inv-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.inv-panel{display:none}
+.inv-panel.active{display:block}
+/* PRODUCT KNOWLEDGE */
+.pk-item{padding:8px 0;border-bottom:1px solid #f0f0f0}
+.pk-item:last-child{border-bottom:none}
+.pk-name{font-size:13px;font-weight:500}
+.pk-desc{font-size:12px;color:#666;margin-top:2px}
+/* DINING */
+.dining-card{background:#f8f8f6;border-radius:8px;padding:12px;border:1px solid #ebebeb;margin-bottom:8px}
+.dining-name{font-weight:600;font-size:13px;color:#dc2626}
+.dining-detail{font-size:12px;color:#555;margin-top:4px}
+.empty-state{text-align:center;padding:32px 16px;color:#aaa;font-size:13px}
+</style>
+</head>
+<body>
 
-function doGet(e) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const output = {
-    guests: getSheetData(ss, 'Guests'),
-    gkPairs: getSheetData(ss, 'GK Pairs'),
-    timestamp: new Date().toISOString()
-  };
-  return ContentService
-    .createTextOutput(JSON.stringify(output))
-    .setMimeType(ContentService.MimeType.JSON);
+<div class="topbar">
+  <div>
+    <div class="topbar-title">GK North Star · NIHI Sumba</div>
+    <div class="topbar-date" id="topbar-date"></div>
+  </div>
+  <div style="font-size:20px">✦</div>
+</div>
+
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="showSection('dashboard')">Dashboard</button>
+  <button class="nav-tab" onclick="showSection('highlights')">Today</button>
+  <button class="nav-tab" onclick="showSection('checklist')">Checklist</button>
+  <button class="nav-tab" onclick="showSection('messages')">Messages</button>
+  <button class="nav-tab" onclick="showSection('activities')">Activities</button>
+  <button class="nav-tab" onclick="showSection('knowledge')">Knowledge</button>
+  <button class="nav-tab" onclick="showSection('links')">Links</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="section active" id="section-dashboard">
+  <div class="selector-bar">
+    <div class="selector-label">Guest Kapten Pair</div>
+    <select id="gk-select" onchange="renderDashboard()">
+      <option>Asna & Anier</option>
+      <option>Marthen & Simson</option>
+      <option>Marthen & Yulius</option>
+      <option>Maxy & Lian</option>
+      <option>Irul & Anggri</option>
+      <option>Doris & Domi</option>
+      <option>Ayu & Upi</option>
+    </select>
+    <div class="shift-btns">
+      <button class="shift-btn active" id="btn-morning" onclick="setShift('morning')">Morning · 07:00–15:00</button>
+      <button class="shift-btn" id="btn-afternoon" onclick="setShift('afternoon')">Afternoon · 14:00–22:00</button>
+    </div>
+  </div>
+  <div class="metrics" id="metrics"></div>
+  <div id="villa-cards"></div>
+  <div class="handover-bar" onclick="renderHandover()">⇄ Handover Summary — tap before shift end</div>
+  <div id="handover-panel"></div>
+</div>
+
+<!-- TODAY'S HIGHLIGHTS -->
+<div class="section" id="section-highlights">
+  <div id="highlights-content"></div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="section" id="section-checklist">
+  <div class="section-card">
+    <details open>
+      <summary>AM Shift Checklist <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
+      <div class="section-body" id="am-checklist"></div>
+    </details>
+  </div>
+  <div class="section-card">
+    <details>
+      <summary>PM Shift Checklist <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
+      <div class="section-body" id="pm-checklist"></div>
+    </details>
+  </div>
+</div>
+
+<!-- MESSAGES -->
+<div class="section" id="section-messages">
+  <div class="section-card">
+    <details>
+      <summary>Arrival Messages <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
+      <div class="section-body" id="arrival-messages"></div>
+    </details>
+  </div>
+  <div class="section-card">
+    <details>
+      <summary>Cultural Activity Invitations <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
+      <div class="section-body">
+        <div class="inv-tabs" id="inv-tabs"></div>
+        <div id="inv-panels"></div>
+      </div>
+    </details>
+  </div>
+  <div class="section-card">
+    <details>
+      <summary>Birthday Message <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
+      <div class="section-body">
+        <div class="template-text" id="tpl-birthday">Dear Ibu/Bapak,
+
+Happy Birthday!
+We're sending you a little sunshine on your special day. All of us in NIHI Sumba is thinking of you and sending our best wishes with this beautiful Sumba view as a little reminder of your time with us.
+
+It was a pleasure having you, and we look forward to welcoming you back again soon.
+
+Warmly,
+GK NAME and NIHI Sumba</div>
+        <button class="copy-btn" onclick="copyText('tpl-birthday',this)"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+    </details>
+  </div>
+  <div class="section-card">
+    <details>
+      <summary>Departure Message <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
+      <div class="section-body">
+        <div class="template-text" id="tpl-departure">Dear Ibu and Bapak,
+
+We hope you left Nihi Sumba with unforgettable memories!
+
+If you've enjoyed your time with us, we would also be incredibly grateful if you could share your experience with others on TripAdvisor. Your kind words not only mean the world to us but also guide future travelers to discover the magic of NIHI.
+
+https://www.tripadvisor.com/UserReviewEdit-g297731-d486594-NIHI_Sumba-Sumba_East_Nusa_Tenggara.html
+
+Thank you for being part of the NIHI Family. We look forward to welcoming you back!
+
+With 🧡 from the Edge of Wildness,
+GK Name</div>
+        <button class="copy-btn" onclick="copyText('tpl-departure',this)"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ACTIVITIES -->
+<div class="section" id="section-activities">
+  <div id="activity-templates"></div>
+</div>
+
+<!-- KNOWLEDGE -->
+<div class="section" id="section-knowledge">
+  <div id="knowledge-content"></div>
+  <div class="section-card" style="margin-top:10px">
+    <details>
+      <summary>Culinary Schedule <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
+      <div class="section-body" id="culinary-content"></div>
+    </details>
+  </div>
+</div>
+
+<!-- LINKS -->
+<div class="section" id="section-links">
+  <div class="links-grid" id="links-grid"></div>
+  <div style="margin-top:14px">
+    <a href="https://forms.gle/3sG5mC74JpyuovC49" target="_blank" style="display:block;background:#1a1a1a;color:#fff;text-align:center;padding:12px;border-radius:10px;font-size:13px;font-weight:500;text-decoration:none">Departure Report Form ↗</a>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const TODAY = new Date();
+const DAY_IDX = TODAY.getDay()===0?6:TODAY.getDay()-1;
+const DAY_NAMES=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+document.getElementById('topbar-date').textContent = TODAY.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+
+let currentShift = 'morning';
+
+const guestData = [
+  {villa:'Kanatar',guest:'Chris Bromwich',pax:'1',ci:'07-Mar-26',co:'13-Mar-26',gk:'Asna & Anier',occasion:'',dietary:'',surf:true,activities:['Surf – 09:00','Spa – 14:00'],alerts:[{l:'orange',msg:'Checkout today – farewell prepared?'}],notes:''},
+  {villa:'Putri Wamoro Jungle',guest:'Nurul (Dhea) Aidha',pax:'2',ci:'12-Mar-26',co:'13-Mar-26',gk:'Asna & Anier',occasion:'',dietary:'Vegetarian',surf:false,activities:['Cultural Tour – 10:00'],alerts:[{l:'orange',msg:'Checkout today'},{l:'yellow',msg:'Dietary: Vegetarian – inform F&B'}],notes:''},
+  {villa:'MSH2',guest:'Ms. Caroline Usher',pax:'1',ci:'12-Mar-26',co:'14-Mar-26',gk:'Asna & Anier',occasion:'',dietary:'',surf:false,activities:['Equestrian – 08:30'],alerts:[],notes:'Quiet guest – no calls before 9am'},
+  {villa:'Marangga 01',guest:'McDonald Alexander',pax:'2+2',ci:'12-Mar-26',co:'17-Mar-26',gk:'Irul & Anggri',occasion:'Family Trip',dietary:'NUT ALLERGY – child',surf:true,activities:['Surf – 07:30','Kids Club – 10:00'],alerts:[{l:'red',msg:'CRITICAL: Child has nut allergy – inform F&B immediately'},{l:'yellow',msg:'Family trip setup requested'}],notes:'Parents want daily activity updates via WhatsApp'},
+  {villa:'Marangga 02',guest:'Colden Glenn',pax:'2',ci:'11-Mar-26',co:'14-Mar-26',gk:'Irul & Anggri',occasion:'',dietary:'',surf:false,activities:['Hiking – 08:00'],alerts:[],notes:''},
+  {villa:'Kanatar Sumba House',guest:'Anastasiia Baranova',pax:'5',ci:'13-Mar-26',co:'17-Mar-26',gk:'Doris & Domi',occasion:'',dietary:'Gluten-free x2',surf:false,activities:['Spa Safari – 09:00','Village Tour – 15:00'],alerts:[{l:'yellow',msg:'Dietary: Gluten-free x2'},{l:'yellow',msg:'Large group 5 pax – coordinate F&B seating'}],notes:'First stay at NIHI'},
+  {villa:'Marangga 3',guest:'Roseria Darmayanti',pax:'2',ci:'12-Mar-26',co:'15-Mar-26',gk:'Doris & Domi',occasion:'',dietary:'',surf:false,activities:['Dinner Under Stars – 19:30'],alerts:[{l:'yellow',msg:'Dinner Under Stars tonight – weather check needed'}],notes:''},
+  {villa:'Mamole A',guest:'Delnaz Kabrajee',pax:'1',ci:'11-Mar-26',co:'15-Mar-26',gk:'Doris & Domi',occasion:'',dietary:'',surf:false,activities:[],alerts:[{l:'yellow',msg:'Internal guest – AI meeting Sat 14 Mar 3pm'}],notes:'Staff stay – escalate issues to Sabine'},
+  {villa:'Wulla Marapu',guest:'Tom Bradley',pax:'3',ci:'10-Mar-26',co:'15-Mar-26',gk:'Ayu & Upi',occasion:'',dietary:'',surf:true,activities:['Surf – 07:30','Waterfall Trek – 13:00'],alerts:[],notes:''},
+  {villa:'Marangga 02',guest:'Denise Hoefer',pax:'1',ci:'10-Mar-26',co:'16-Mar-26',gk:'Ayu & Upi',occasion:'Birthday',dietary:'',surf:false,activities:['Spa – 10:00'],alerts:[{l:'orange',msg:'BIRTHDAY today – cake & room decoration confirmed?'}],notes:'Return guest – 2nd stay'},
+  {villa:'Marangga 04',guest:'Michelle Tigris',pax:'2',ci:'11-Mar-26',co:'14-Mar-26',gk:'Maxy & Lian',occasion:'Anniversary',dietary:'Vegan',surf:false,activities:['Couples Spa – 11:00','Kaboku – 19:00'],alerts:[{l:'orange',msg:'Anniversary – flowers & welcome gift confirmed?'},{l:'yellow',msg:'Dietary: Vegan – Kaboku menu pre-confirmed?'}],notes:''},
+];
+
+const invitations = [
+  {day:'Monday',title:'Ancient Art & Jungle Dinner',content:`Hi Ibu/Bapak,\nGood morning! Here's what we have in store for you today:\n\nSumba Foundation Tour\n🗓️ 10:00 AM · Front Office\n\n☀️ 11:00 AM: Sumba Man Stone Carving\n🎾 4:00 PM: Social Padel Games (Complimentary)\n🌅 5:30 PM: Sunset Happy Hour at the Boathouse\n🌿 7:00 PM: Jungle-Themed Dinner at Ombak\n\nSee you there,\nGK Name`},
+  {day:'Tuesday',title:'Sumba Legends & Sunset',content:`Hi Ibu/Bapak,\nHere's what we have lined up for you:\n\nEnglish Goes to Kampung\n🗓️ 2:45 PM · Front Office\n\n🌅 5:30 PM: Sunset Happy Hour at the Boathouse\n6:45 PM: Story Telling at Ombak Bar\n\nSee you there,\nGK NAME`},
+  {day:'Wednesday',title:'Cultural Village Journey',content:`Hi Ibu/Bapak,\nHere are some activities for tomorrow:\n\nComplimentary Cultural Journey to Waitabar & Tarung Villages\n🗓️ 10:00 AM · Front Office\n\nBeginner Padel Class\n🗓️ 4:00 PM – 5:30 PM · Padel Court · IDR 700k/person\n\nHope to see you there,\nGK NAME`},
+  {day:'Thursday',title:'Taste of Sumba',content:`Hi Ibu/Bapak,\nWe'd like to invite you to Taste of Sumba!\n\nGuided Organic Garden Tour + Cooking Demo\n📍 Ombak · ⏰ 10:45 AM · Duration: 1.5 hours\n\nPlease let us know if you'd like to join!\n\nSee you,\nGK Name`},
+  {day:'Friday',title:'Sumba Pony Story',content:`Hi Ibu/Bapak,\nHere are some activities for your Friday:\n\nSumba Pony Story & Grazing Adventure\n📍 Stable · ⏰ 07:00 AM\n\nSumba Foundation Tour · 10:00 AM · Front Office\nEnglish Class · 3:00 PM · Front Office\nPadel 3 and Me · 4:00 PM · IDR 700k/person\n\nWarmly,\nGK NAME`},
+  {day:'Saturday',title:'Ikat Weaving Class',content:`Hi Bapak/Ibu,\nWe'd like to invite you to our IKAT WEAVING CLASS.\n\n🗓️ Saturday · ⏰ 10:00 AM\n📌 Front Office / Sumba Market\n\nEach thread tells a story – join us!\n\nGuest Kapten`},
+  {day:'Sunday',title:'Parona Hai Hills Trekking',content:`Hi Ibu/Bapak,\nWe'd like to invite you on a complimentary trek to Parona Hai Hills.\n\n40-minute trek through jungle, rice paddies, wild horses. If tides allow, ends at a natural rock pool.\n\nPlease let us know if you'd like to join!\n\nWarmly,\nGK Name`},
+];
+
+const activityTemplates = [
+  {title:'Surf Lesson',id:'surf',content:`Activity: Surf Lesson 🌊\n\nDate:\nTime:\nMeeting Point: Boathouse – arrive 10 mins early\n\nPlease complete: https://nihihotels.formstack.com/forms/surfability\n\nBring swimwear – rash guard, booties & sunblock provided.\nDuration: ~1–1.5 hrs · Cost: IDR (private/group)\nCancellation: 75% fee if <12 hrs notice\n\nMimpi Indah,\nGK NAME`},
+  {title:'Swimming with Horses',id:'swim-horses',content:`Activity: Swimming with the Horses 🌊🐴\n\nDate:\nTime:\nMeeting Point: Nio Beach\n\nPlease share: riding level, height & weight (max 85kg/187lbs)\n\nSaddle blanket & rope provided for grip. Stableman accompanies in water.\nDuration: 30 mins · Cost: IDR 2,000,000++/person\nCancellation: 24 hrs notice required\n\nEnjoy your time with the horse! 🏊🐴`},
+  {title:'Sunset Horse Riding',id:'sunset-ride',content:`Activity: Sunset Horse Riding 🏇\n\nDate:\nTime:\nMeeting Point: Sandalwood Stables at 16:45\n\nPlease share: riding level (beginner/intermediate/advanced), height & weight (max 85kg/187lbs)\n\nRide along Nihiwatu beach to the 3 palm trees.\nDuration: ~1 hr · Cost: IDR 3,000,000++/person\nCancellation: 24 hrs notice required\n\nEnjoy! 🐴`},
+  {title:'Bush to Beach / River Trail',id:'bush-trail',content:`Activity: Bush to Beach / River Ricefield Trail 🐎\n\nDate:\nTime:\nMeeting Point: Sandalwood Stables at 7 AM or 3:30 PM\n\nPlease share: riding level (intermediate/advanced), height & weight (max 75kg/165lbs)\nWear: long comfy pants + socks. Boots & helmet provided.\n\nDuration: ~1.5–2 hrs · Cost: IDR 3,500,000++/person\nCancellation: 24 hrs notice required\n\nEnjoy! 🐴`},
+  {title:'Horse Riding Lesson',id:'riding-lesson',content:`Activity: Horse Riding Lesson 🏇\n\nDate:\nTime:\nMeeting Point: Sandalwood Stables\n\nPlease share: riding level (beginner/intermediate), height & weight (max 85kg/187lbs)\nWear: long comfy pants + socks. Boots & helmet provided.\n\nLesson in arena + ride along Nihiwatu beach.\nDuration: 1 hr · Cost: IDR 3,500,000++/person\nCancellation: 24 hrs notice required\n\nEnjoy! 🐴`},
+  {title:'Nihioka Full-Day Spa Safari',id:'spa-full',content:`Subject: Your Nihioka Full-Day Spa Safari\n\nDear Ibu/Bapak,\n\nDate: Tomorrow\nMeeting Point: Front Office at 7:25 AM\n\nWhat to expect: Travel through villages to Nihioka Spa. Healthy breakfast/lunch + 5 hours of spa treatments + cliffside pool.\n\nWear: comfortable shoes, modest clothing (shoulders covered). Bring tumbler, sunscreen, swimwear.\n\nCost: IDR 21,000,000++/couple\nCancellation: 24 hrs notice required\n\n[GK Name]`},
+  {title:'Nihioka Half-Day Spa Safari',id:'spa-half',content:`Subject: Your Nihioka Half-Day Spa Safari\n\nDear Ibu/Bapak,\n\nDate: Tomorrow\nMeeting Point: Front Office at 7:25 AM\n\nWhat to expect: Travel to Nihioka Spa. Healthy breakfast/lunch + 2.5 hours of treatments + pool.\n\nWear: comfortable shoes, modest clothing. Bring tumbler, sunscreen, swimwear.\n\nCost: IDR 13,000,000++/couple\nCancellation: 24 hrs notice required\n\n[GK Name]`},
+  {title:'Chef\'s Table',id:'chefs-table',content:`Subject: Confirmation – Chef's Table Experience\n\nDear Ibu and Bapak,\n\n📍 Nio Beach Club · ⏰ 7:00 PM\n\nAn extraordinary omakase-inspired culinary journey – east meets west.\n\nPlease share any allergies or dietary preferences.\n🍷 Pre-order wine/alcohol available on request.\n\nCost: IDR 5,000,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
+  {title:'Kaboku Omakase',id:'omakase',content:`Subject: Confirmation – Kaboku Omakase\n\nDear Ibu and Bapak,\n\n📍 Kaboku at Nio Beach Club · ⏰ 7:00 PM\n\n"I trust the chef" – Japanese omakase featuring fresh seafood, sushi & sashimi.\n\nPlease note seafood/sushi-heavy menu. Share any allergies.\n\nCost: IDR 5,500,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
+  {title:'Dinner Under the Stars',id:'stars',content:`Subject: Confirmation – Dinner Under the Stars\n\nDear Ibu and Bapak,\n\n📍 Location: (confirm)\n⏰ 7:00 PM\n\n5-course set menu under the stars. Location may vary by weather/tides.\n🍷 Pre-order wine available.\n\nShare any allergies or dietary preferences.\n\nCost: IDR 5,000,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
+  {title:'Private Villa Dinner',id:'villa-dinner',content:`Subject: Confirmation – Private Dinner in the Villa\n\nDear Ibu and Bapak,\n\n📍 Your villa · ⏰ 7:00 PM\n\n5-course set menu in the privacy of your villa.\n🍷 Pre-order wine/beverages available.\n\nShare any allergies or dietary preferences.\n\nCost: IDR 3,500,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK NAME)`},
+  {title:'Fishing Trip',id:'fishing',content:`Subject: Your Fishing Trip is Confirmed! 🎣\n\nDear Bapak/Ibu,\n\nDate:\nMeeting Point: Boathouse · ⏰ 7:30 AM\n\nPack: sun protection, hat, swimwear.\nWe provide: towels, snacks, drinks & cold beers 🍻\n\nCost: IDR 12,500,000++/2-hour trip\nCancellation: fee applies <24 hrs\n\nMimpi indah,\nGK NAME`},
+  {title:'Sunset Cruise',id:'cruise',content:`Subject: Confirmation – Sunset Cruise\n\nDear Ibu and Bapak,\n\n📍 Boathouse · ⏰ 4:30 PM\n\nSunset views, drinks & canapés. Watch for dolphins!\nNote if prone to seasickness.\n\nCost: IDR 12,500,000++ Big Blue / IDR 10,000,000++ Sumba Sawyer\nCancellation: fee <24 hrs\n\nMimpi indah ✨\n(GK Name)`},
+  {title:'E-Bike Adventure',id:'ebike',content:`Subject: Your E-Biking Adventure is Confirmed!\n\nDear Ibu/Bapak,\n\nDate:\nTime:\nMeeting Point: Reception – Front Office\n\nRoute through villages, rivers & rice paddies. Ends with snack pack.\nWear: shoulders covered (village respect), comfortable shoes.\n\nDuration: ~1.5–2 hrs · Cost: IDR 4,500,000++/couple\nCancellation: fee <24 hrs\n\nWarm regards,\nGK [NAME]`},
+  {title:'Wanukaka River Adventure',id:'river',content:`Subject: Wanukaka River Adventure Confirmed\n\nDear Ibu & Bapak,\n\nSUP or Kayak options available\n📍 Front Office · ⏰ 7:30 AM\n\nWear: modest clothing (not too revealing), material comfortable when wet. Bring change of clothes.\n\n40-min scenic drive to river. 60–90 min paddle. Snacks & drinks provided at the end.\n\nCost: IDR 8,200,000++/couple\nCancellation: fee <24 hrs\n\nGK NAME`},
+  {title:'Mocktail Class',id:'mocktail',content:`Subject: Your Mocktail Class Confirmed\n\nDear Ibu/Bapak,\n\nDate:\nTime:\n📍 Ombak Bar\n\nLearn to make 4 different mocktails in a fun interactive class.\n\nCost: IDR 1,000,000\n\nSee you there!\nGK NAME`},
+  {title:'Snack Menu Order',id:'snack',content:`Dear Bapak/Ibu,\n\nPlease take a moment to choose your snack pack for ACTIVITY NAME tomorrow:\n\nhttps://nihihotels.formstack.com/forms/experiencesmenu\n\nPlease confirm your selection.\n\nThank you,\nGK NAME`},
+];
+
+const amTasks = {
+  'Villa Prep':['Set up early breakfast (if requested)','Send all dining requests to kitchen','Arrange soiled dish pick-up','Check AC, lights, water, minibar, mosquito spray, tumblers','Confirm laundry (if requested)'],
+  'Activity Prep':['Review daily guest itineraries','Confirm activity bookings with departments','Prepare items for activities (snack packs, etc.)','Confirm morning airport transfers'],
+};
+const pmTasks = {
+  'Villa Prep':['Light all villa lanterns','Arrange sofa and cushions','Prepare evening drinks (if requested)','Check minibar stock & guest preferences','Check mosquito spray & tumblers'],
+  'Activity Prep':['Review daily itineraries','Confirm activity bookings with departments','Prepare turndown amenities','Confirm evening airport transfers'],
+  'End of Shift Handover':['Guest Status – note where guests are','Activities Done – list completed activities','Pending Tasks – flag for next shift','Villa Condition – note any issues','Key Handover – urgent notes for incoming GK'],
+};
+
+const highlights = [
+  {breakfast:{t:'6:30 AM',n:'Breakfast at Ombak Restaurant'},main:{t:'10:00 AM',n:'Sumba Foundation Tour'},cultural:{t:'11:00 AM',n:'Sumba Man Stone Carving'},padel:{t:'4:00 PM',n:'Social Padel (Complimentary)'},dinner:{t:'7:00 PM',n:'Jungle-Themed Dinner at Ombak'}},
+  {breakfast:{t:'6:30 AM',n:'Breakfast at Ombak'},main:{t:'7:30 AM',n:'E-Bike Ride (Complimentary)'},foundation:{t:'2:45 PM',n:'English Goes to Kampung'},cultural:{t:'6:45 PM',n:'Storytelling at Ombak Bar'},dinner:{t:'6:30 PM',n:'Dinner at Ombak'}},
+  {breakfast:{t:'6:30 AM',n:'Breakfast at Ombak'},main:{t:'10:00 AM',n:'Cultural Village Journey (Complimentary)'},padel:{t:'4:00 PM',n:'Beginner Padel · IDR 700k/pax'},dinner:{t:'7:00 PM',n:'Foundation Night at Menara'}},
+  {breakfast:{t:'6:30 AM',n:'Breakfast at Nio Beach Club'},main:{t:'7:30 AM',n:'E-Bike Ride (Complimentary)'},cultural:{t:'10:45 AM',n:'Organic Garden Tour & Cooking Demo'},dinner:{t:'6:30 PM',n:'Dinner at Ombak'}},
+  {breakfast:{t:'6:30 AM',n:'Breakfast at Ombak'},main:{t:'10:00 AM',n:'Sumba Foundation Tour'},foundation:{t:'3:00 PM',n:'Foundation English Class'},padel:{t:'4:00 PM',n:'3 and Me Padel · IDR 700k/pax'},dinner:{t:'6:30 PM',n:'Dinner at Ombak'}},
+  {breakfast:{t:'6:30 AM',n:'Breakfast at Ombak'},main:{t:'10:00 AM',n:'Ikat Weaving Class'},dinner:{t:'7:00 PM',n:'White Party Dinner 🎉'}},
+  {breakfast:{t:'6:30 AM',n:'Breakfast at Nio Beach Club'},main:{t:'4:00 PM',n:'Parona Hai Hills Trekking (Complimentary)'},dinner:{t:'6:30 PM',n:'Dinner at Ombak'}},
+];
+
+const knowledge = [
+  {cat:'Water Activities',icon:'fa-water',color:'#3b82f6',items:[{n:'Surfing',d:"Ride the famous God's Left wave. All skill levels."},{n:'Kitesurfing',d:'World-class conditions with consistent winds.'},{n:'Fishing & Spearfishing',d:'Deep-sea fishing or underwater spearfishing.'},{n:'SUP & Kayaking',d:'Calm bay waters or Wanukaka River.'},{n:'Jet Ski & Hydrofoil',d:'High-speed fun and fly above the water.'},{n:'Diving',d:'Vibrant coral reefs and diverse marine life.'}]},
+  {cat:'Equestrian',icon:'fa-horse-head',color:'#d97706',items:[{n:'Sumba Pony Story',d:'Morning connection with the iconic Sumba Pony.'},{n:'Trail & Beach Rides',d:'Lush trails to Nihiwatu Beach – 2.5km.'},{n:'Swimming with Horses',d:'Guide your horse into the turquoise sea.'},{n:'Sunset Riding',d:'Ride along the beach at golden hour.'},{n:'Nihioka Ride & Breakfast',d:'Ride to the spa + healthy breakfast.'}]},
+  {cat:'Wellness & Spa',icon:'fa-spa',color:'#ec4899',items:[{n:'Nihioka Spa Safari (Full Day)',d:'Trek to cliffside spa. 5 hrs treatments + pool.'},{n:'Nihioka Spa Safari (Half Day)',d:'Trek to cliffside spa. 2.5 hrs treatments.'},{n:'In-Villa Treatments',d:'Massages in the privacy of your villa.'},{n:'Yoga & Meditation',d:'Daily hilltop sessions with 360° views (not Fri).'}]},
+  {cat:'Cultural Immersion',icon:'fa-landmark',color:'#6366f1',items:[{n:'Village Visits',d:'Waitabar & Tarung villages – authentic Sumbanese life.'},{n:'Sumba Foundation Tour',d:'Mon & Fri 10am. Community projects showcase.'},{n:'Stone Carving',d:'Learn the ancient art from local artisans.'},{n:'Ikat Weaving',d:'Saturday weaving workshop at Sumba Market.'}]},
+  {cat:'Adventure',icon:'fa-hiking',color:'#16a34a',items:[{n:'E-Bike Adventures',d:'Tue, Thu, Sat 7:30am. Beginner to Advanced.'},{n:'Trekking',d:'Waterfalls, Parona Hai Hills, rice paddies.'},{n:'Wanukaka River',d:'SUP or Kayak. 60–90 min. Scenic 40-min drive.'},{n:'Bird Watching',d:'Expert naturalist guide.'}]},
+  {cat:'NIHI Wildlings (Kids Club)',icon:'fa-leaf',color:'#f97316',items:[{n:'Ages 3–12',d:'Open daily 09:00–16:00. Drop-off at Chocolate Factory.'},{n:'Monday',d:'Sea Adventure & Pony Care / Turtle Lovers 2:30pm'},{n:'Tuesday',d:'Indonesian Cooking / Chocolate Making 2:30pm'},{n:'Wednesday',d:'Sumba Culture / Coconut Smoothie 3pm'},{n:'Thursday',d:'Earth & Clay / Pizza Making / Mud Play'},{n:'Friday',d:'Jungle Walk / Food Forest Feast'},{n:'Saturday',d:'Treasure Hunt / Chocolate Making'},{n:'Sunday',d:'Palm Craft / Kids Yoga 9:30am / Cupcake Deco'}]},
+];
+
+const culinary = [
+  {name:'OMBAK RESTAURANT',details:['Breakfast: 6:30–11:00 AM (Mon, Tue, Wed, Fri, Sat)','Dinner: 6:30–10:00 PM']},
+  {name:'NIO BEACH CLUB',details:['Breakfast: 6:30–11:00 AM (Sun, Thu – weather dependent)','Lunch: 12:00–3:00 PM']},
+  {name:'KABOKU',details:['Dinner: 7:00–10:00 PM','Limited to 6 guests · Pre-booking essential · Not inclusive']},
+];
+const weeklyDining = [
+  {day:'Monday',name:'Jungle-Themed Dinner',time:'7:00 PM',desc:'Open-fire cooking, local ingredients, family-style feast.'},
+  {day:'Wednesday',name:'Foundation Night at Menara',time:'7:00 PM',desc:'Curated buffet + short film on Sumba Foundation projects.'},
+  {day:'Saturday',name:'White Party Dinner',time:'7:00 PM',desc:"NIHI's most iconic night. Signature cocktail + buffet celebration."},
+];
+
+const links = [
+  {label:'Weekly Activities Schedule',url:'https://docs.google.com/document/d/1Fn7O0YY5waTrmU-lVdbIlrj4xC1cEneajGfrNLoLSaE/edit'},
+  {label:'Link Tree Room Directory',url:'https://nihi.com/linktree-roomdirectory/'},
+  {label:'Surf Ability Form',url:'https://nihihotels.formstack.com/forms/surfability'},
+  {label:'Kids Club Waiver',url:'https://nihihotels.formstack.com/forms/nihiwildlings_waiver'},
+  {label:'Pre-Arrival Sheet',url:'https://docs.google.com/document/d/1d0QVfPBMG7fgMyCAO4x_WwBpK8s6lHTt4-XoOoBIcWM/edit'},
+  {label:'GK Allocation',url:'https://docs.google.com/spreadsheets/d/1ErIBTbYJDby0aQPknKWoBMwpIf1iHd0A/edit'},
+  {label:'GE Attendance',url:'https://docs.google.com/spreadsheets/d/1dTxjhdJXKNbHOV2JBIRePn5CL36wt58X/edit'},
+  {label:'Visiting Guru',url:'https://nihi.com/experiences/visiting-gurus/'},
+  {label:'Snack Menu',url:'https://nihihotels.formstack.com/forms/experiencesmenu'},
+  {label:'WA Image Messages',url:'https://www.dropbox.com/scl/fo/2c4xgov21cz583py0tudm/ADzAA8cS-TaRcDFVE8oY10c'},
+];
+
+// ── HELPERS ──────────────────────────────────────────────────────
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+function setShift(s){
+  currentShift=s;
+  document.getElementById('btn-morning').classList.toggle('active',s==='morning');
+  document.getElementById('btn-afternoon').classList.toggle('active',s==='afternoon');
+  renderDashboard();
+}
+function copyText(id,btn){
+  const txt=document.getElementById(id).innerText;
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.classList.add('copied');
+    btn.innerHTML='<i class="fas fa-check"></i> Copied!';
+    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML='<i class="fas fa-copy"></i> Copy';},2000);
+  });
 }
 
-function getSheetData(ss, sheetName) {
-  const sheet = ss.getSheetByName(sheetName);
-  if (!sheet) return [];
-  const [headers, ...rows] = sheet.getDataRange().getValues();
-  return rows
-    .filter(row => row.some(cell => cell !== ''))
-    .map(row => {
-      const obj = {};
-      headers.forEach((h, i) => {
-        const key = h.toString().trim().toLowerCase().replace(/\s+/g, '_');
-        let val = row[i];
-        // Parse pipe-separated lists into arrays
-        if (typeof val === 'string' && val.includes('|')) {
-          val = val.split('|').map(v => v.trim()).filter(Boolean);
-        }
-        // Parse alert objects: "red:CRITICAL message|yellow:note"
-        if (key === 'alerts' && typeof val === 'string' && val !== '') {
-          val = val.split('|').map(a => {
-            const colon = a.indexOf(':');
-            return colon > -1
-              ? { l: a.slice(0, colon).trim(), msg: a.slice(colon + 1).trim() }
-              : { l: 'yellow', msg: a.trim() };
-          }).filter(a => a.msg);
-        } else if (key === 'alerts' && Array.isArray(val)) {
-          val = val.map(a => {
-            const colon = a.indexOf(':');
-            return colon > -1
-              ? { l: a.slice(0, colon).trim(), msg: a.slice(colon + 1).trim() }
-              : { l: 'yellow', msg: a.trim() };
-          }).filter(a => a.msg);
-        }
-        // Booleans
-        if (val === 'TRUE' || val === true) val = true;
-        if (val === 'FALSE' || val === false) val = false;
-        obj[key] = val;
-      });
-      return obj;
+// ── DASHBOARD ────────────────────────────────────────────────────
+function renderDashboard(){
+  const gk=document.getElementById('gk-select').value;
+  const villas=guestData.filter(g=>g.gk===gk);
+  const red=villas.filter(g=>g.alerts.some(a=>a.l==='red')).length;
+  const checkouts=villas.filter(g=>g.alerts.some(a=>a.msg.includes('Checkout'))).length;
+  const checkins=villas.filter(g=>g.ci==='13-Mar-26').length;
+
+  document.getElementById('metrics').innerHTML=
+    [{label:'Villas',val:villas.length,red:false},
+     {label:'Critical',val:red,red:red>0},
+     {label:'Departing',val:checkouts,red:false},
+     {label:'Arriving',val:checkins,red:false}]
+    .map(m=>`<div class="metric"><div class="metric-val${m.red?' red':''}">${m.val}</div><div class="metric-label">${m.label}</div></div>`).join('');
+
+  if(villas.length===0){
+    document.getElementById('villa-cards').innerHTML='<div class="empty-state">No villas assigned for this pair today.</div>';
+    return;
+  }
+  document.getElementById('villa-cards').innerHTML=villas.map((g,i)=>{
+    const topAlert=g.alerts.length>0?g.alerts[0].l:'none';
+    const alertClass=topAlert!=='none'?'alert-'+topAlert:'';
+    const today='13-Mar-26';
+    const isCI=g.ci===today;
+    const isCO=g.alerts.some(a=>a.msg.includes('Checkout'));
+    return`<div class="villa-card ${alertClass}" onclick="toggleCard(${i})">
+      <div class="villa-header">
+        <div>
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+            <span class="villa-name">${g.villa}</span>
+            ${isCI?'<span class="badge badge-green">Arriving</span>':''}
+            ${isCO?'<span class="badge badge-amber">Departing</span>':''}
+            ${g.occasion?`<span class="badge badge-purple">${g.occasion}</span>`:''}
+          </div>
+          <div class="villa-guest">${g.guest}</div>
+          <div class="villa-meta">${g.pax} pax · ${g.ci} → ${g.co}</div>
+        </div>
+        <i class="fas fa-chevron-down" style="color:#aaa;font-size:12px;margin-left:8px" id="chev-${i}"></i>
+      </div>
+      ${g.alerts.length>0?`<div class="alert-pills">${g.alerts.map(a=>`<div class="alert-pill ${a.l}">${a.l==='red'?'<strong>CRITICAL</strong> ':''} ${a.msg}</div>`).join('')}</div>`:''}
+      <div class="villa-details" id="detail-${i}">
+        ${g.activities.length>0?`<div class="detail-section"><div class="detail-label">Today's activities</div>${g.activities.map(a=>`<div class="detail-val">· ${a}</div>`).join('')}</div>`:''}
+        ${g.dietary?`<div class="detail-section"><div class="detail-label">Dietary</div><div class="detail-val" style="color:#dc2626;font-weight:500">${g.dietary}</div></div>`:''}
+        ${g.surf?`<div class="detail-section"><div class="detail-label">Surf</div><div class="detail-val">Booked – confirm slot with Boathouse</div></div>`:''}
+        ${g.notes?`<div class="detail-section"><div class="detail-label">GK Notes</div><div class="detail-val">${g.notes}</div></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(i){
+  const d=document.getElementById('detail-'+i);
+  const c=document.getElementById('chev-'+i);
+  const open=d.classList.contains('open');
+  d.classList.toggle('open',!open);
+  c.style.transform=open?'':'rotate(180deg)';
+}
+
+function renderHandover(){
+  const gk=document.getElementById('gk-select').value;
+  const villas=guestData.filter(g=>g.gk===gk);
+  const flags=villas.flatMap(g=>g.alerts.map(a=>({villa:g.villa,guest:g.guest,...a})));
+  const panel=document.getElementById('handover-panel');
+  if(flags.length===0){panel.innerHTML='<div class="empty-state" style="padding:16px">No active flags to hand over. ✓</div>';return;}
+  panel.innerHTML=`<div class="section-card" style="margin-top:8px"><div class="section-body">
+    <div class="detail-label" style="margin-bottom:10px">Active flags for incoming shift</div>
+    ${flags.map(f=>`<div class="alert-pill ${f.l}" style="margin-bottom:6px"><strong>${f.villa} · ${f.guest}</strong><br>${f.msg}</div>`).join('')}
+  </div></div>`;
+}
+
+// ── HIGHLIGHTS ───────────────────────────────────────────────────
+function renderHighlights(){
+  const h=highlights[DAY_IDX];
+  const events=Object.values(h).sort((a,b)=>{
+    const toM=t=>{const p=t.toLowerCase().match(/(\d+):(\d+)\s*(am|pm)/);if(!p)return 999;let hr=+p[1],min=+p[2];if(p[3]==='pm'&&hr<12)hr+=12;if(p[3]==='am'&&hr===12)hr=0;return hr*60+min;};
+    return toM(a.t)-toM(b.t);
+  });
+  const icons={'Breakfast':'fa-coffee','Lunch':'fa-sun','Dinner':'fa-utensils','Party':'fa-utensils'};
+  const getIcon=n=>{if(n.toLowerCase().includes('breakfast'))return'fa-coffee';if(n.toLowerCase().includes('dinner'))return'fa-utensils';if(n.toLowerCase().includes('padel'))return'fa-table-tennis';if(n.toLowerCase().includes('bike'))return'fa-bicycle';if(n.toLowerCase().includes('trek')||n.toLowerCase().includes('trail'))return'fa-hiking';if(n.toLowerCase().includes('tour')||n.toLowerCase().includes('village')||n.toLowerCase().includes('carving')||n.toLowerCase().includes('weaving')||n.toLowerCase().includes('story'))return'fa-landmark';if(n.toLowerCase().includes('horse')||n.toLowerCase().includes('pony'))return'fa-horse-head';if(n.toLowerCase().includes('class')||n.toLowerCase().includes('english')||n.toLowerCase().includes('garden'))return'fa-chalkboard-teacher';return'fa-star';};
+  document.getElementById('highlights-content').innerHTML=`
+    <div class="section-card">
+      <div style="padding:14px 16px;font-weight:600;font-size:14px;border-bottom:1px solid #f0f0f0">${DAY_NAMES[DAY_IDX]}'s Programme</div>
+      <div class="section-body">${events.map(e=>`
+        <div class="highlight-item">
+          <div class="hi-icon" style="background:#f0f0f0"><i class="fas ${getIcon(e.n)}" style="color:#555;font-size:13px"></i></div>
+          <div><div style="font-size:13px;font-weight:500">${e.n}</div><div class="hi-time">${e.t}</div></div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ── CHECKLIST ────────────────────────────────────────────────────
+function buildChecklist(containerId,tasks){
+  const el=document.getElementById(containerId);
+  Object.keys(tasks).forEach(cat=>{
+    el.innerHTML+=`<div class="cat-title">${cat}</div>`;
+    tasks[cat].forEach((task,i)=>{
+      const id=`${containerId}-${cat}-${i}`;
+      el.innerHTML+=`<div class="checklist-item"><input type="checkbox" id="${id}"><label for="${id}">${task}</label></div>`;
     });
+  });
 }
+
+// ── MESSAGES ─────────────────────────────────────────────────────
+function buildArrivalMessages(){
+  const msgs=[
+    {title:'1st Message – Arrival',id:'arr1',content:`Subject: Welcome to Paradise! 🎉\n\nDear [Name] Family,\n\nWelcome to NIHI Sumba! We are absolutely thrilled to have you here.\n\nYour Guest Kapten is here to make everything seamless. Reach us here on WhatsApp or dial ext. 105 from your villa.\n\nDon't miss:\n🌿 Spa Safari at Nihioka: https://nihi.com/wellness/spa-safari/\n🐎 Equine Activities – swim with horses, ride at sunset\n\nFull activities & dining info:\nhttps://nihi.com/linktree-roomdirectory/\n\nWarm regards,\nGK [NAME]`},
+    {title:'2nd Message – Dining Schedule',id:'arr2',content:`Hi Ibu/Bapak!\n\nHope you're settling in nicely! ✨\n\nJust wanted to share our Dining Schedule for your convenience – timings for breakfast, lunch & dinner.\n\nWarm regards,\nGK [NAME]`},
+    {title:'3rd Message – First Morning',id:'arr3',content:`Hi Ibu/Bapak!\n\nGood morning! Hope you had a wonderful first night. ☀️\n\nHere are additional activities you can explore at your own pace:\n\n🥾 Trekking Tours · 🌱 Garden Tour · 🎾 Padel & Pickleball (6am–6pm) · 🌍 Sumba Foundation Tour (Mon & Fri 10am) · 🐢 Turtle Release (when available) · 🏖️ Beach Walk (low tide) · 🍫 Charly's Chocolate Factory (9am–5pm) · 🐴 Sandalwood Stables Tour (6am–6pm) · 🧘 Daily Yoga (except Fri) · 🧵 Weaving Class (9am–4pm)\n\nI am always here to help add any of these to your day!\n\nWarm regards,\nGK [NAME]`},
+  ];
+  const el=document.getElementById('arrival-messages');
+  msgs.forEach(m=>{
+    el.innerHTML+=`<details style="margin-bottom:8px"><summary style="cursor:pointer;font-size:13px;font-weight:500;padding:8px 0;list-style:none">${m.title}</summary>
+      <div class="template-text" id="${m.id}" style="margin-top:8px">${m.content}</div>
+      <button class="copy-btn" onclick="copyText('${m.id}',this)"><i class="fas fa-copy"></i> Copy</button>
+    </details>`;
+  });
+}
+
+function buildInvitations(){
+  const tabs=document.getElementById('inv-tabs');
+  const panels=document.getElementById('inv-panels');
+  invitations.forEach((inv,i)=>{
+    const tab=document.createElement('button');
+    tab.className='inv-tab'+(i===DAY_IDX?' active':'');
+    tab.textContent=inv.day;
+    tab.onclick=()=>{
+      document.querySelectorAll('.inv-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.inv-panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('inv-panel-'+i).classList.add('active');
+    };
+    tabs.appendChild(tab);
+    const panel=document.createElement('div');
+    panel.id='inv-panel-'+i;
+    panel.className='inv-panel'+(i===DAY_IDX?' active':'');
+    panel.innerHTML=`<div style="font-weight:600;font-size:13px;margin-bottom:8px">${inv.title}</div>
+      <div class="template-text" id="inv-txt-${i}">${inv.content}</div>
+      <button class="copy-btn" onclick="copyText('inv-txt-${i}',this)"><i class="fas fa-copy"></i> Copy</button>`;
+    panels.appendChild(panel);
+  });
+}
+
+// ── ACTIVITIES ───────────────────────────────────────────────────
+function buildActivityTemplates(){
+  const el=document.getElementById('activity-templates');
+  const sorted=[...activityTemplates].sort((a,b)=>a.title.localeCompare(b.title));
+  el.innerHTML=sorted.map(t=>`
+    <div class="section-card">
+      <details>
+        <summary>${t.title} <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
+        <div class="section-body">
+          <div class="template-text" id="act-${t.id}">${t.content}</div>
+          <button class="copy-btn" onclick="copyText('act-${t.id}',this)"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+      </details>
+    </div>`).join('');
+}
+
+// ── KNOWLEDGE ────────────────────────────────────────────────────
+function buildKnowledge(){
+  const el=document.getElementById('knowledge-content');
+  el.innerHTML=knowledge.map(cat=>`
+    <div class="section-card">
+      <details>
+        <summary><i class="fas ${cat.icon}" style="color:${cat.color};margin-right:8px"></i>${cat.cat} <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
+        <div class="section-body">${cat.items.map(item=>`
+          <div class="pk-item">
+            <div class="pk-name">${item.n}</div>
+            <div class="pk-desc">${item.d}</div>
+          </div>`).join('')}
+        </div>
+      </details>
+    </div>`).join('');
+
+  const el2=document.getElementById('culinary-content');
+  el2.innerHTML=culinary.map(r=>`<div class="dining-card"><div class="dining-name">${r.name}</div>${r.details.map(d=>`<div class="dining-detail">· ${d}</div>`).join('')}</div>`).join('')
+  +'<div style="font-weight:600;font-size:13px;margin:14px 0 8px">Weekly Themed Dining</div>'
+  +weeklyDining.map(d=>`<div class="dining-card"><div class="dining-name">${d.day} · ${d.name}</div><div class="dining-detail">⏰ ${d.time}</div><div class="dining-detail">${d.desc}</div></div>`).join('');
+}
+
+// ── LINKS ─────────────────────────────────────────────────────────
+function buildLinks(){
+  document.getElementById('links-grid').innerHTML=links.map(l=>`
+    <div class="link-card">
+      <div class="link-label">Link</div>
+      <a href="${l.url}" target="_blank">${l.label} ↗</a>
+    </div>`).join('');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+renderDashboard();
+renderHighlights();
+buildChecklist('am-checklist',amTasks);
+buildChecklist('pm-checklist',pmTasks);
+buildArrivalMessages();
+buildInvitations();
+buildActivityTemplates();
+buildKnowledge();
+buildLinks();
+</script>
+</body>
+</html>

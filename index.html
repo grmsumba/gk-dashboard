@@ -372,8 +372,8 @@ const activityTemplates = [
   {title:'Horse Riding Lesson',id:'riding-lesson',content:`Activity: Horse Riding Lesson 🏇\n\nDate:\nTime:\nMeeting Point: Sandalwood Stables\n\nPlease share: riding level (beginner/intermediate), height & weight (max 85kg/187lbs)\nWear: long comfy pants + socks. Boots & helmet provided.\n\nLesson in arena + ride along Nihiwatu beach.\nDuration: 1 hr · Cost: IDR 3,500,000++/person\nCancellation: 24 hrs notice required\n\nEnjoy! 🐴`},
   {title:'Nihioka Full-Day Spa Safari',id:'spa-full',content:`Subject: Your Nihioka Full-Day Spa Safari\n\nDear Ibu/Bapak,\n\nDate: Tomorrow\nMeeting Point: Front Office at 7:25 AM\n\nWhat to expect: Travel through villages to Nihioka Spa. Healthy breakfast/lunch + 5 hours of spa treatments + cliffside pool.\n\nWear: comfortable shoes, modest clothing (shoulders covered). Bring tumbler, sunscreen, swimwear.\n\nCost: IDR 21,000,000++/couple\nCancellation: 24 hrs notice required\n\n[GK Name]`},
   {title:'Nihioka Half-Day Spa Safari',id:'spa-half',content:`Subject: Your Nihioka Half-Day Spa Safari\n\nDear Ibu/Bapak,\n\nDate: Tomorrow\nMeeting Point: Front Office at 7:25 AM\n\nWhat to expect: Travel to Nihioka Spa. Healthy breakfast/lunch + 2.5 hours of treatments + pool.\n\nWear: comfortable shoes, modest clothing. Bring tumbler, sunscreen, swimwear.\n\nCost: IDR 13,000,000++/couple\nCancellation: 24 hrs notice required\n\n[GK Name]`},
-  {title:"Chef's Table",id:'chefs-table',content:`Subject: Confirmation – Chef's Table Experience\n\nDear Ibu and Bapak,\n\n📍 Nio Beach Club · ⏰ 7:00 PM\n\nAn extraordinary omakase-inspired culinary journey – east meets west.\n\nPlease share any allergies or dietary preferences.\n🍷 Pre-order wine/alcohol available on request.\n\nCost: IDR 7,500,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
-  {title:'Kaboku Omakase',id:'omakase',content:`Subject: Confirmation – Kaboku Omakase\n\nDear Ibu and Bapak,\n\n📍 Kaboku at Nio Beach Club · ⏰ 7:00 PM\n\n"I trust the chef" – Japanese omakase featuring fresh seafood, sushi & sashimi.\n\nPlease note seafood/sushi-heavy menu. Share any allergies.\n\nCost: IDR 7,500,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
+  {title:"Chef's Table",id:'chefs-table',content:`Subject: Confirmation – Chef's Table Experience\n\nDear Ibu and Bapak,\n\n📍 Nio Beach Club · ⏰ 7:00 PM\n\nAn extraordinary omakase-inspired culinary journey – east meets west.\n\nPlease share any allergies or dietary preferences.\n🍷 Pre-order wine/alcohol available on request.\n\nCost: IDR 5,000,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
+  {title:'Kaboku Omakase',id:'omakase',content:`Subject: Confirmation – Kaboku Omakase\n\nDear Ibu and Bapak,\n\n📍 Kaboku at Nio Beach Club · ⏰ 7:00 PM\n\n"I trust the chef" – Japanese omakase featuring fresh seafood, sushi & sashimi.\n\nPlease note seafood/sushi-heavy menu. Share any allergies.\n\nCost: IDR 5,500,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
   {title:'Dinner Under the Stars',id:'stars',content:`Subject: Confirmation – Dinner Under the Stars\n\nDear Ibu and Bapak,\n\n📍 Location: (confirm)\n⏰ 7:00 PM\n\n5-course set menu under the stars. Location may vary by weather/tides.\n🍷 Pre-order wine available.\n\nShare any allergies or dietary preferences.\n\nCost: IDR 5,000,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
   {title:'Private Villa Dinner',id:'villa-dinner',content:`Subject: Confirmation – Private Dinner in the Villa\n\nDear Ibu and Bapak,\n\n📍 Your villa · ⏰ 7:00 PM\n\n5-course set menu in the privacy of your villa.\n🍷 Pre-order wine/beverages available.\n\nShare any allergies or dietary preferences.\n\nCost: IDR 3,500,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK NAME)`},
   {title:'Fishing Trip',id:'fishing',content:`Subject: Your Fishing Trip is Confirmed! 🎣\n\nDear Bapak/Ibu,\n\nDate:\nMeeting Point: Boathouse · ⏰ 7:30 AM\n\nPack: sun protection, hat, swimwear.\nWe provide: towels, snacks, drinks & cold beers 🍻\n\nCost: IDR 12,500,000++/2-hour trip\nCancellation: fee applies <24 hrs\n\nMimpi indah,\nGK NAME`},
@@ -758,7 +758,11 @@ function renderNoticeBoard() {
     // Check expiry date if set
     if (n.expires && n.expires !== '') {
       const exp = parseSheetDate(n.expires);
-      if (exp && exp < TODAY) return false;
+      // Expire at end of the expiry day — set time to 23:59
+      if (exp) {
+        exp.setHours(23, 59, 59);
+        if (exp < new Date()) return false;
+      }
     }
     return true;
   });
@@ -789,12 +793,17 @@ function renderNoticeBoard() {
 }
 
 function parseSheetDate(str) {
-  if (!str) return null;
+  if (!str || str === '') return null;
+  // Handle dd-Mon-yy or dd-Mon-yyyy
   const months = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
-  const m = String(str).trim().match(/(\d{1,2})-([a-zA-Z]{3})-(\d{2,4})/);
-  if (!m) return null;
-  const yr = m[3].length === 2 ? 2000 + parseInt(m[3]) : parseInt(m[3]);
-  return new Date(yr, months[m[2].toLowerCase()], parseInt(m[1]));
+  const m = String(str).trim().match(/(\d{1,2})[-\/]([a-zA-Z]{3})[-\/](\d{2,4})/);
+  if (m) {
+    const yr = m[3].length === 2 ? 2000 + parseInt(m[3]) : parseInt(m[3]);
+    return new Date(yr, months[m[2].toLowerCase()], parseInt(m[1]));
+  }
+  // Fallback: try native Date parse
+  const d = new Date(str);
+  return isNaN(d.getTime()) ? null : d;
 }
 
 // ── BOOKINGS ─────────────────────────────────────────────────────

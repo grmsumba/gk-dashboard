@@ -425,7 +425,6 @@ const links = [
 ];
 
 function normaliseGuest(g) {
-  // Normalise fields from sheet column names → app field names
   return {
     villa: g.villa || g.villa_name || '',
     guest_name: g.guest_name || g.guest || g.name || '',
@@ -436,7 +435,6 @@ function normaliseGuest(g) {
     occasion: g.occasion || '',
     dietary: g.dietary || g.dietary_requirements || '',
     surf: g.surf === true || g.surf === 'TRUE' || g.surf === 'Yes',
-    activities: Array.isArray(g.activities) ? g.activities : (g.activities ? [g.activities] : []),
     alerts: Array.isArray(g.alerts) ? g.alerts : [],
     notes: g.notes || g.gk_notes || '',
   };
@@ -525,7 +523,27 @@ function renderDashboard() {
     const alertClass = topAlert !== 'none' ? 'alert-' + topAlert : '';
     const isCI = g.check_in === today;
     const isCO = g.alerts.some(a => a.msg && a.msg.toLowerCase().includes('checkout'));
-    const acts = Array.isArray(g.activities) ? g.activities : [];
+
+    // Pull today's activities from the Activities sheet matched by villa (preferred)
+    // Fall back to the activities column in the Guests sheet
+    const sheetActs = liveActivities.filter(a => {
+      const aVilla = (a.villa || '').toString().trim().toLowerCase();
+      const gVilla = (g.villa || '').toString().trim().toLowerCase();
+      return aVilla === gVilla || aVilla.includes(gVilla) || gVilla.includes(aVilla);
+    });
+
+    const actsHTML = sheetActs.length > 0
+      ? sheetActs.map(a => {
+          const reconf = (a['reconfirmed?'] || a.reconfirmed_ || '').toString().trim().toLowerCase();
+          const reconfBadge = reconf === 'yes'
+            ? '<span style="background:#dcfce7;color:#166534;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:4px">✓</span>'
+            : reconf === 'no'
+            ? '<span style="background:#fee2e2;color:#991b1b;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:4px">⚠</span>'
+            : '';
+          return `<div class="detail-val" style="margin-bottom:4px">· <strong>${a.time || 'TBA'}</strong> ${a.activity || ''}${reconfBadge}${a.meal_req && a.meal_req !== 'N/A' ? `<span style="color:#f97316;font-size:11px;margin-left:4px">🍽 ${a.meal_req}</span>` : ''}</div>`;
+        }).join('')
+      : (Array.isArray(g.activities) ? g.activities : []).map(a => `<div class="detail-val">· ${a}</div>`).join('');
+
     return `<div class="villa-card ${alertClass}" onclick="toggleCard(${i})">
       <div class="villa-header">
         <div>
@@ -542,7 +560,7 @@ function renderDashboard() {
       </div>
       ${g.alerts.length > 0 ? `<div class="alert-pills">${g.alerts.map(a => `<div class="alert-pill ${a.l}">${a.l==='red'?'<strong>CRITICAL</strong> ':''}${a.msg}</div>`).join('')}</div>` : ''}
       <div class="villa-details" id="detail-${i}">
-        ${acts.length > 0 ? `<div class="detail-section"><div class="detail-label">Today's activities</div>${acts.map(a => `<div class="detail-val">· ${a}</div>`).join('')}</div>` : ''}
+        ${actsHTML ? `<div class="detail-section"><div class="detail-label">Today's activities${sheetActs.length > 0 ? ' <span style="color:#16a34a;font-size:10px">● Live</span>' : ''}</div>${actsHTML}</div>` : ''}
         ${g.dietary ? `<div class="detail-section"><div class="detail-label">Dietary</div><div class="detail-val" style="color:#dc2626;font-weight:500">${g.dietary}</div></div>` : ''}
         ${g.surf ? `<div class="detail-section"><div class="detail-label">Surf</div><div class="detail-val">Booked – confirm slot with Boathouse</div></div>` : ''}
         ${g.notes ? `<div class="detail-section"><div class="detail-label">GK Notes</div><div class="detail-val">${g.notes}</div></div>` : ''}

@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GK North Star — NIHI Sumba</title>
+<!-- PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="GK North Star">
+<meta name="theme-color" content="#1a1a1a">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a1a1a'/><text y='.9em' font-size='70' x='50%' text-anchor='middle'>✦</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <style>
@@ -13,6 +19,13 @@ body{font-family:'Inter',sans-serif;background:#f5f4f0;color:#1a1a1a;font-size:1
 .topbar{background:#1a1a1a;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;position:sticky;top:0;z-index:100}
 .topbar-title{font-size:16px;font-weight:600;letter-spacing:0.02em}
 .topbar-date{font-size:12px;color:#aaa}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.sync-status{font-size:11px;display:flex;align-items:center;gap:5px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#aaa}
+.sync-dot.live{background:#4ade80}
+.sync-dot.error{background:#f87171}
+.sync-dot.loading{background:#fbbf24;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 .nav-tabs{display:flex;gap:4px;padding:0 16px;background:#fff;border-bottom:1px solid #e5e5e5;overflow-x:auto;scrollbar-width:none}
 .nav-tabs::-webkit-scrollbar{display:none}
 .nav-tab{padding:12px 16px;font-size:13px;font-weight:500;color:#666;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none}
@@ -105,6 +118,38 @@ select,input[type=text]{width:100%;padding:10px 12px;border:1px solid #ddd;borde
 .dining-name{font-weight:600;font-size:13px;color:#dc2626}
 .dining-detail{font-size:12px;color:#555;margin-top:4px}
 .empty-state{text-align:center;padding:32px 16px;color:#aaa;font-size:13px}
+/* BOOKING CARDS */
+.booking-card{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px;border:1px solid #e5e5e5;border-left:3px solid #1a1a1a}
+.booking-card.meal{border-left-color:#f97316}
+.booking-card.special{border-left-color:#dc2626}
+.booking-time{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.booking-activity{font-size:14px;font-weight:600;color:#1a1a1a}
+.booking-guest{font-size:13px;color:#444;margin-top:2px}
+.booking-meta{font-size:12px;color:#888;margin-top:2px}
+.booking-note{margin-top:8px;background:#fef9c3;border-radius:6px;padding:6px 10px;font-size:12px;color:#854d0e}
+.booking-meal{margin-top:6px;background:#ffedd5;border-radius:6px;padding:6px 10px;font-size:12px;color:#9a3412}
+.booking-reconf{display:inline-block;margin-top:6px;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500}
+.booking-reconf.yes{background:#dcfce7;color:#166534}
+.booking-reconf.no{background:#fee2e2;color:#991b1b}
+.bookings-date{font-size:12px;color:#888;text-align:center;padding:8px 0 4px;margin-bottom:6px}
+/* OFFLINE BANNER */
+.offline-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;text-align:center;padding:10px 16px;font-size:12px;font-weight:500;z-index:200;letter-spacing:0.02em}
+.offline-banner.show{display:block}
+.offline-banner span{color:#fbbf24}
+/* LOADING / ERROR */
+.loading-card{background:#fff;border-radius:12px;padding:24px;text-align:center;border:1px solid #e5e5e5;margin-bottom:10px}
+.loading-spinner{display:inline-block;width:20px;height:20px;border:2px solid #e5e5e5;border-top-color:#1a1a1a;border-radius:50%;animation:spin 0.7s linear infinite;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-card{background:#fee2e2;border-radius:12px;padding:16px;border:1px solid #fca5a5;margin-bottom:10px;font-size:13px;color:#991b1b}
+/* CONFIG BANNER */
+.config-banner{background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:13px;color:#92400e}
+.config-banner strong{display:block;margin-bottom:4px}
+.config-banner input{margin-top:8px;padding:8px 10px;border:1px solid #fbbf24;border-radius:6px;font-size:12px;width:100%;background:#fffbeb;color:#1a1a1a;font-family:'Inter',sans-serif}
+.config-banner button{margin-top:8px;padding:7px 14px;background:#1a1a1a;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer}
+/* LAST UPDATED */
+.last-updated{font-size:11px;color:#aaa;text-align:center;padding:8px 0 4px}
+.refresh-btn{background:none;border:none;color:#aaa;cursor:pointer;font-size:11px;text-decoration:underline;padding:0;font-family:'Inter',sans-serif}
+.refresh-btn:hover{color:#1a1a1a}
 </style>
 </head>
 <body>
@@ -114,31 +159,33 @@ select,input[type=text]{width:100%;padding:10px 12px;border:1px solid #ddd;borde
     <div class="topbar-title">GK North Star · NIHI Sumba</div>
     <div class="topbar-date" id="topbar-date"></div>
   </div>
-  <div style="font-size:20px">✦</div>
+  <div class="topbar-right">
+    <div class="sync-status">
+      <div class="sync-dot loading" id="sync-dot"></div>
+      <span id="sync-label" style="font-size:11px;color:#aaa">Syncing…</span>
+    </div>
+    <div style="font-size:20px">✦</div>
+  </div>
 </div>
 
 <div class="nav-tabs">
-  <button class="nav-tab active" onclick="showSection('dashboard')">Dashboard</button>
-  <button class="nav-tab" onclick="showSection('highlights')">Today</button>
-  <button class="nav-tab" onclick="showSection('checklist')">Checklist</button>
-  <button class="nav-tab" onclick="showSection('messages')">Messages</button>
-  <button class="nav-tab" onclick="showSection('activities')">Activities</button>
-  <button class="nav-tab" onclick="showSection('knowledge')">Knowledge</button>
-  <button class="nav-tab" onclick="showSection('links')">Links</button>
+  <button class="nav-tab active" onclick="showSection('dashboard',this)">Dashboard</button>
+  <button class="nav-tab" onclick="showSection('highlights',this)">Today</button>
+  <button class="nav-tab" onclick="showSection('checklist',this)">Checklist</button>
+  <button class="nav-tab" onclick="showSection('messages',this)">Messages</button>
+  <button class="nav-tab" onclick="showSection('activities',this)">Activities</button>
+  <button class="nav-tab" onclick="showSection('knowledge',this)">Knowledge</button>
+  <button class="nav-tab" onclick="showSection('bookings',this)">Bookings</button>
+  <button class="nav-tab" onclick="showSection('links',this)">Links</button>
 </div>
 
 <!-- DASHBOARD -->
 <div class="section active" id="section-dashboard">
+  <div id="config-area"></div>
   <div class="selector-bar">
     <div class="selector-label">Guest Kapten Pair</div>
-    <select id="gk-select" onchange="renderDashboard()">
-      <option>Asna & Anier</option>
-      <option>Marthen & Simson</option>
-      <option>Marthen & Yulius</option>
-      <option>Maxy & Lian</option>
-      <option>Irul & Anggri</option>
-      <option>Doris & Domi</option>
-      <option>Ayu & Upi</option>
+    <select id="gk-select" onchange="renderDashboard();renderBookings()">
+      <option value="">Loading pairs…</option>
     </select>
     <div class="shift-btns">
       <button class="shift-btn active" id="btn-morning" onclick="setShift('morning')">Morning · 07:00–15:00</button>
@@ -149,6 +196,7 @@ select,input[type=text]{width:100%;padding:10px 12px;border:1px solid #ddd;borde
   <div id="villa-cards"></div>
   <div class="handover-bar" onclick="renderHandover()">⇄ Handover Summary — tap before shift end</div>
   <div id="handover-panel"></div>
+  <div class="last-updated"><span id="last-updated-text"></span> · <button class="refresh-btn" onclick="fetchLiveData(true)">Refresh now</button></div>
 </div>
 
 <!-- TODAY'S HIGHLIGHTS -->
@@ -244,6 +292,11 @@ GK Name</div>
   </div>
 </div>
 
+<!-- BOOKINGS -->
+<div class="section" id="section-bookings">
+  <div id="bookings-content"></div>
+</div>
+
 <!-- LINKS -->
 <div class="section" id="section-links">
   <div class="links-grid" id="links-grid"></div>
@@ -252,29 +305,41 @@ GK Name</div>
   </div>
 </div>
 
+<div class="offline-banner" id="offline-banner">
+  <span>⚡ Offline</span> — showing last synced data. Connect to WiFi to refresh.
+</div>
+
 <script>
-// ── DATA ──────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// CONFIG — paste your Apps Script Web App URL here
+// After deploying your Apps Script, replace the string below
+// ══════════════════════════════════════════════════════════
+const STORAGE_KEY = 'gk_sheets_url';
+let SHEETS_API_URL = localStorage.getItem(STORAGE_KEY) || '';
+
+// ── LIVE DATA STATE ─────────────────────────────────────────
+let liveGuests = [];
+let liveGKPairs = [];
+let liveActivities = [];
+let dataLoaded = false;
+let lastFetched = null;
+
+// ── STATIC DATA ────────────────────────────────────────────
 const TODAY = new Date();
 const DAY_IDX = TODAY.getDay()===0?6:TODAY.getDay()-1;
 const DAY_NAMES=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-
 document.getElementById('topbar-date').textContent = TODAY.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 
 let currentShift = 'morning';
 
-const guestData = [
-  {villa:'Kanatar',guest:'Chris Bromwich',pax:'1',ci:'07-Mar-26',co:'13-Mar-26',gk:'Asna & Anier',occasion:'',dietary:'',surf:true,activities:['Surf – 09:00','Spa – 14:00'],alerts:[{l:'orange',msg:'Checkout today – farewell prepared?'}],notes:''},
-  {villa:'Putri Wamoro Jungle',guest:'Nurul (Dhea) Aidha',pax:'2',ci:'12-Mar-26',co:'13-Mar-26',gk:'Asna & Anier',occasion:'',dietary:'Vegetarian',surf:false,activities:['Cultural Tour – 10:00'],alerts:[{l:'orange',msg:'Checkout today'},{l:'yellow',msg:'Dietary: Vegetarian – inform F&B'}],notes:''},
-  {villa:'MSH2',guest:'Ms. Caroline Usher',pax:'1',ci:'12-Mar-26',co:'14-Mar-26',gk:'Asna & Anier',occasion:'',dietary:'',surf:false,activities:['Equestrian – 08:30'],alerts:[],notes:'Quiet guest – no calls before 9am'},
-  {villa:'Marangga 01',guest:'McDonald Alexander',pax:'2+2',ci:'12-Mar-26',co:'17-Mar-26',gk:'Irul & Anggri',occasion:'Family Trip',dietary:'NUT ALLERGY – child',surf:true,activities:['Surf – 07:30','Kids Club – 10:00'],alerts:[{l:'red',msg:'CRITICAL: Child has nut allergy – inform F&B immediately'},{l:'yellow',msg:'Family trip setup requested'}],notes:'Parents want daily activity updates via WhatsApp'},
-  {villa:'Marangga 02',guest:'Colden Glenn',pax:'2',ci:'11-Mar-26',co:'14-Mar-26',gk:'Irul & Anggri',occasion:'',dietary:'',surf:false,activities:['Hiking – 08:00'],alerts:[],notes:''},
-  {villa:'Kanatar Sumba House',guest:'Anastasiia Baranova',pax:'5',ci:'13-Mar-26',co:'17-Mar-26',gk:'Doris & Domi',occasion:'',dietary:'Gluten-free x2',surf:false,activities:['Spa Safari – 09:00','Village Tour – 15:00'],alerts:[{l:'yellow',msg:'Dietary: Gluten-free x2'},{l:'yellow',msg:'Large group 5 pax – coordinate F&B seating'}],notes:'First stay at NIHI'},
-  {villa:'Marangga 3',guest:'Roseria Darmayanti',pax:'2',ci:'12-Mar-26',co:'15-Mar-26',gk:'Doris & Domi',occasion:'',dietary:'',surf:false,activities:['Dinner Under Stars – 19:30'],alerts:[{l:'yellow',msg:'Dinner Under Stars tonight – weather check needed'}],notes:''},
-  {villa:'Mamole A',guest:'Delnaz Kabrajee',pax:'1',ci:'11-Mar-26',co:'15-Mar-26',gk:'Doris & Domi',occasion:'',dietary:'',surf:false,activities:[],alerts:[{l:'yellow',msg:'Internal guest – AI meeting Sat 14 Mar 3pm'}],notes:'Staff stay – escalate issues to Sabine'},
-  {villa:'Wulla Marapu',guest:'Tom Bradley',pax:'3',ci:'10-Mar-26',co:'15-Mar-26',gk:'Ayu & Upi',occasion:'',dietary:'',surf:true,activities:['Surf – 07:30','Waterfall Trek – 13:00'],alerts:[],notes:''},
-  {villa:'Marangga 02',guest:'Denise Hoefer',pax:'1',ci:'10-Mar-26',co:'16-Mar-26',gk:'Ayu & Upi',occasion:'Birthday',dietary:'',surf:false,activities:['Spa – 10:00'],alerts:[{l:'orange',msg:'BIRTHDAY today – cake & room decoration confirmed?'}],notes:'Return guest – 2nd stay'},
-  {villa:'Marangga 04',guest:'Michelle Tigris',pax:'2',ci:'11-Mar-26',co:'14-Mar-26',gk:'Maxy & Lian',occasion:'Anniversary',dietary:'Vegan',surf:false,activities:['Couples Spa – 11:00','Kaboku – 19:00'],alerts:[{l:'orange',msg:'Anniversary – flowers & welcome gift confirmed?'},{l:'yellow',msg:'Dietary: Vegan – Kaboku menu pre-confirmed?'}],notes:''},
+// Fallback demo data (shown if no API URL configured yet)
+const DEMO_GUESTS = [
+  {villa:'Kanatar',guest_name:'Chris Bromwich',pax:'1',check_in:'07-Mar-26',check_out:'13-Mar-26',gk_pair:'Asna & Anier',occasion:'',dietary:'',surf:true,activities:['Surf – 09:00','Spa – 14:00'],alerts:[{l:'orange',msg:'Checkout today – farewell prepared?'}],notes:''},
+  {villa:'Putri Wamoro Jungle',guest_name:'Nurul (Dhea) Aidha',pax:'2',check_in:'12-Mar-26',check_out:'13-Mar-26',gk_pair:'Asna & Anier',occasion:'',dietary:'Vegetarian',surf:false,activities:['Cultural Tour – 10:00'],alerts:[{l:'orange',msg:'Checkout today'},{l:'yellow',msg:'Dietary: Vegetarian – inform F&B'}],notes:''},
+  {villa:'Marangga 01',guest_name:'McDonald Alexander',pax:'2+2',check_in:'12-Mar-26',check_out:'17-Mar-26',gk_pair:'Irul & Anggri',occasion:'Family Trip',dietary:'NUT ALLERGY – child',surf:true,activities:['Surf – 07:30','Kids Club – 10:00'],alerts:[{l:'red',msg:'CRITICAL: Child has nut allergy – inform F&B immediately'},{l:'yellow',msg:'Family trip setup requested'}],notes:'Parents want daily activity updates via WhatsApp'},
+  {villa:'Marangga 04',guest_name:'Michelle Tigris',pax:'2',check_in:'11-Mar-26',check_out:'14-Mar-26',gk_pair:'Maxy & Lian',occasion:'Anniversary',dietary:'Vegan',surf:false,activities:['Couples Spa – 11:00','Kaboku – 19:00'],alerts:[{l:'orange',msg:'Anniversary – flowers & welcome gift confirmed?'},{l:'yellow',msg:'Dietary: Vegan – Kaboku menu pre-confirmed?'}],notes:''},
 ];
+const DEMO_GK_PAIRS = ['Asna & Anier','Marthen & Simson','Marthen & Yulius','Maxy & Lian','Irul & Anggri','Doris & Domi','Ayu & Upi'];
 
 const invitations = [
   {day:'Monday',title:'Ancient Art & Jungle Dinner',content:`Hi Ibu/Bapak,\nGood morning! Here's what we have in store for you today:\n\nSumba Foundation Tour\n🗓️ 10:00 AM · Front Office\n\n☀️ 11:00 AM: Sumba Man Stone Carving\n🎾 4:00 PM: Social Padel Games (Complimentary)\n🌅 5:30 PM: Sunset Happy Hour at the Boathouse\n🌿 7:00 PM: Jungle-Themed Dinner at Ombak\n\nSee you there,\nGK Name`},
@@ -294,7 +359,7 @@ const activityTemplates = [
   {title:'Horse Riding Lesson',id:'riding-lesson',content:`Activity: Horse Riding Lesson 🏇\n\nDate:\nTime:\nMeeting Point: Sandalwood Stables\n\nPlease share: riding level (beginner/intermediate), height & weight (max 85kg/187lbs)\nWear: long comfy pants + socks. Boots & helmet provided.\n\nLesson in arena + ride along Nihiwatu beach.\nDuration: 1 hr · Cost: IDR 3,500,000++/person\nCancellation: 24 hrs notice required\n\nEnjoy! 🐴`},
   {title:'Nihioka Full-Day Spa Safari',id:'spa-full',content:`Subject: Your Nihioka Full-Day Spa Safari\n\nDear Ibu/Bapak,\n\nDate: Tomorrow\nMeeting Point: Front Office at 7:25 AM\n\nWhat to expect: Travel through villages to Nihioka Spa. Healthy breakfast/lunch + 5 hours of spa treatments + cliffside pool.\n\nWear: comfortable shoes, modest clothing (shoulders covered). Bring tumbler, sunscreen, swimwear.\n\nCost: IDR 21,000,000++/couple\nCancellation: 24 hrs notice required\n\n[GK Name]`},
   {title:'Nihioka Half-Day Spa Safari',id:'spa-half',content:`Subject: Your Nihioka Half-Day Spa Safari\n\nDear Ibu/Bapak,\n\nDate: Tomorrow\nMeeting Point: Front Office at 7:25 AM\n\nWhat to expect: Travel to Nihioka Spa. Healthy breakfast/lunch + 2.5 hours of treatments + pool.\n\nWear: comfortable shoes, modest clothing. Bring tumbler, sunscreen, swimwear.\n\nCost: IDR 13,000,000++/couple\nCancellation: 24 hrs notice required\n\n[GK Name]`},
-  {title:'Chef\'s Table',id:'chefs-table',content:`Subject: Confirmation – Chef's Table Experience\n\nDear Ibu and Bapak,\n\n📍 Nio Beach Club · ⏰ 7:00 PM\n\nAn extraordinary omakase-inspired culinary journey – east meets west.\n\nPlease share any allergies or dietary preferences.\n🍷 Pre-order wine/alcohol available on request.\n\nCost: IDR 5,000,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
+  {title:"Chef's Table",id:'chefs-table',content:`Subject: Confirmation – Chef's Table Experience\n\nDear Ibu and Bapak,\n\n📍 Nio Beach Club · ⏰ 7:00 PM\n\nAn extraordinary omakase-inspired culinary journey – east meets west.\n\nPlease share any allergies or dietary preferences.\n🍷 Pre-order wine/alcohol available on request.\n\nCost: IDR 5,000,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
   {title:'Kaboku Omakase',id:'omakase',content:`Subject: Confirmation – Kaboku Omakase\n\nDear Ibu and Bapak,\n\n📍 Kaboku at Nio Beach Club · ⏰ 7:00 PM\n\n"I trust the chef" – Japanese omakase featuring fresh seafood, sushi & sashimi.\n\nPlease note seafood/sushi-heavy menu. Share any allergies.\n\nCost: IDR 5,500,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
   {title:'Dinner Under the Stars',id:'stars',content:`Subject: Confirmation – Dinner Under the Stars\n\nDear Ibu and Bapak,\n\n📍 Location: (confirm)\n⏰ 7:00 PM\n\n5-course set menu under the stars. Location may vary by weather/tides.\n🍷 Pre-order wine available.\n\nShare any allergies or dietary preferences.\n\nCost: IDR 5,000,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK Name)`},
   {title:'Private Villa Dinner',id:'villa-dinner',content:`Subject: Confirmation – Private Dinner in the Villa\n\nDear Ibu and Bapak,\n\n📍 Your villa · ⏰ 7:00 PM\n\n5-course set menu in the privacy of your villa.\n🍷 Pre-order wine/beverages available.\n\nShare any allergies or dietary preferences.\n\nCost: IDR 3,500,000++/couple\nCancellation: after 11 AM tomorrow\n\nMimpi indah ✨\n(GK NAME)`},
@@ -359,108 +424,197 @@ const links = [
   {label:'WA Image Messages',url:'https://www.dropbox.com/scl/fo/2c4xgov21cz583py0tudm/ADzAA8cS-TaRcDFVE8oY10c'},
 ];
 
-// ── HELPERS ──────────────────────────────────────────────────────
-function showSection(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('section-'+id).classList.add('active');
-  event.target.classList.add('active');
+function normaliseGuest(g) {
+  // Normalise fields from sheet column names → app field names
+  return {
+    villa: g.villa || g.villa_name || '',
+    guest_name: g.guest_name || g.guest || g.name || '',
+    pax: String(g.pax || g.number_of_guests || ''),
+    check_in: g.check_in || g.ci || g.checkin || '',
+    check_out: g.check_out || g.co || g.checkout || '',
+    gk_pair: g.gk_pair || g.gk || '',
+    occasion: g.occasion || '',
+    dietary: g.dietary || g.dietary_requirements || '',
+    surf: g.surf === true || g.surf === 'TRUE' || g.surf === 'Yes',
+    activities: Array.isArray(g.activities) ? g.activities : (g.activities ? [g.activities] : []),
+    alerts: Array.isArray(g.alerts) ? g.alerts : [],
+    notes: g.notes || g.gk_notes || '',
+  };
 }
-function setShift(s){
-  currentShift=s;
-  document.getElementById('btn-morning').classList.toggle('active',s==='morning');
-  document.getElementById('btn-afternoon').classList.toggle('active',s==='afternoon');
+
+function setSyncStatus(state, label) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.className = 'sync-dot ' + (state === 'live' ? 'live' : state === 'error' ? 'error' : state === 'loading' ? 'loading' : '');
+  lbl.textContent = label;
+}
+
+function useData(guests, pairs) {
+  liveGuests = guests;
+  liveGKPairs = pairs;
+  populateGKSelect(pairs);
   renderDashboard();
-}
-function copyText(id,btn){
-  const txt=document.getElementById(id).innerText;
-  navigator.clipboard.writeText(txt).then(()=>{
-    btn.classList.add('copied');
-    btn.innerHTML='<i class="fas fa-check"></i> Copied!';
-    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML='<i class="fas fa-copy"></i> Copy';},2000);
-  });
+  renderBookings();
 }
 
-// ── DASHBOARD ────────────────────────────────────────────────────
-function renderDashboard(){
-  const gk=document.getElementById('gk-select').value;
-  const villas=guestData.filter(g=>g.gk===gk);
-  const red=villas.filter(g=>g.alerts.some(a=>a.l==='red')).length;
-  const checkouts=villas.filter(g=>g.alerts.some(a=>a.msg.includes('Checkout'))).length;
-  const checkins=villas.filter(g=>g.ci==='13-Mar-26').length;
+function renderConfigBanner() {
+  const area = document.getElementById('config-area');
+  if (!SHEETS_API_URL) {
+    area.innerHTML = `<div class="config-banner">
+      <strong>⚙️ Connect to Google Sheets</strong>
+      Paste your Apps Script Web App URL below to enable live data from the GEM's spreadsheet.
+      <input type="text" id="api-url-input" placeholder="https://script.google.com/macros/s/…/exec" value="">
+      <button onclick="saveApiUrl()">Save & Connect</button>
+    </div>`;
+  } else {
+    area.innerHTML = `<div style="text-align:right;margin-bottom:8px"><button class="refresh-btn" onclick="showUrlEditor()" style="color:#888">⚙️ Change Sheet URL</button></div>`;
+  }
+}
 
-  document.getElementById('metrics').innerHTML=
+function showUrlEditor() {
+  const area = document.getElementById('config-area');
+  area.innerHTML = `<div class="config-banner">
+    <strong>⚙️ Google Sheets API URL</strong>
+    <input type="text" id="api-url-input" placeholder="https://script.google.com/macros/s/…/exec" value="${SHEETS_API_URL}">
+    <button onclick="saveApiUrl()">Save & Reconnect</button>
+  </div>`;
+}
+
+function saveApiUrl() {
+  const val = document.getElementById('api-url-input').value.trim();
+  if (!val) return;
+  SHEETS_API_URL = val;
+  localStorage.setItem(STORAGE_KEY, val);
+  document.getElementById('config-area').innerHTML = '';
+  fetchLiveData(true);
+}
+
+// ── GK SELECT ───────────────────────────────────────────────
+function populateGKSelect(pairs) {
+  const sel = document.getElementById('gk-select');
+  const current = sel.value;
+  sel.innerHTML = pairs.map(p => `<option value="${p}"${p===current?' selected':''}>${p}</option>`).join('');
+  if (!current && pairs.length) sel.value = pairs[0];
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────
+function renderDashboard() {
+  const gk = document.getElementById('gk-select').value;
+  const today = formatDate(TODAY);
+  const villas = liveGuests.filter(g => g.gk_pair === gk);
+
+  const red = villas.filter(g => g.alerts.some(a => a.l === 'red')).length;
+  const checkouts = villas.filter(g => g.alerts.some(a => a.msg && a.msg.toLowerCase().includes('checkout'))).length;
+  const checkins = villas.filter(g => g.check_in === today).length;
+
+  document.getElementById('metrics').innerHTML =
     [{label:'Villas',val:villas.length,red:false},
      {label:'Critical',val:red,red:red>0},
      {label:'Departing',val:checkouts,red:false},
      {label:'Arriving',val:checkins,red:false}]
-    .map(m=>`<div class="metric"><div class="metric-val${m.red?' red':''}">${m.val}</div><div class="metric-label">${m.label}</div></div>`).join('');
+    .map(m => `<div class="metric"><div class="metric-val${m.red?' red':''}">${m.val}</div><div class="metric-label">${m.label}</div></div>`).join('');
 
-  if(villas.length===0){
-    document.getElementById('villa-cards').innerHTML='<div class="empty-state">No villas assigned for this pair today.</div>';
+  if (villas.length === 0) {
+    document.getElementById('villa-cards').innerHTML = '<div class="empty-state">No villas assigned to this pair.</div>';
+    renderBookings();
     return;
   }
-  document.getElementById('villa-cards').innerHTML=villas.map((g,i)=>{
-    const topAlert=g.alerts.length>0?g.alerts[0].l:'none';
-    const alertClass=topAlert!=='none'?'alert-'+topAlert:'';
-    const today='13-Mar-26';
-    const isCI=g.ci===today;
-    const isCO=g.alerts.some(a=>a.msg.includes('Checkout'));
-    return`<div class="villa-card ${alertClass}" onclick="toggleCard(${i})">
+
+  document.getElementById('villa-cards').innerHTML = villas.map((g, i) => {
+    const topAlert = g.alerts.length > 0 ? g.alerts[0].l : 'none';
+    const alertClass = topAlert !== 'none' ? 'alert-' + topAlert : '';
+    const isCI = g.check_in === today;
+    const isCO = g.alerts.some(a => a.msg && a.msg.toLowerCase().includes('checkout'));
+    const acts = Array.isArray(g.activities) ? g.activities : [];
+    return `<div class="villa-card ${alertClass}" onclick="toggleCard(${i})">
       <div class="villa-header">
         <div>
           <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
             <span class="villa-name">${g.villa}</span>
-            ${isCI?'<span class="badge badge-green">Arriving</span>':''}
-            ${isCO?'<span class="badge badge-amber">Departing</span>':''}
-            ${g.occasion?`<span class="badge badge-purple">${g.occasion}</span>`:''}
+            ${isCI ? '<span class="badge badge-green">Arriving</span>' : ''}
+            ${isCO ? '<span class="badge badge-amber">Departing</span>' : ''}
+            ${g.occasion ? `<span class="badge badge-purple">${g.occasion}</span>` : ''}
           </div>
-          <div class="villa-guest">${g.guest}</div>
-          <div class="villa-meta">${g.pax} pax · ${g.ci} → ${g.co}</div>
+          <div class="villa-guest">${g.guest_name}</div>
+          <div class="villa-meta">${g.pax} pax · ${g.check_in} → ${g.check_out}</div>
         </div>
         <i class="fas fa-chevron-down" style="color:#aaa;font-size:12px;margin-left:8px" id="chev-${i}"></i>
       </div>
-      ${g.alerts.length>0?`<div class="alert-pills">${g.alerts.map(a=>`<div class="alert-pill ${a.l}">${a.l==='red'?'<strong>CRITICAL</strong> ':''} ${a.msg}</div>`).join('')}</div>`:''}
+      ${g.alerts.length > 0 ? `<div class="alert-pills">${g.alerts.map(a => `<div class="alert-pill ${a.l}">${a.l==='red'?'<strong>CRITICAL</strong> ':''}${a.msg}</div>`).join('')}</div>` : ''}
       <div class="villa-details" id="detail-${i}">
-        ${g.activities.length>0?`<div class="detail-section"><div class="detail-label">Today's activities</div>${g.activities.map(a=>`<div class="detail-val">· ${a}</div>`).join('')}</div>`:''}
-        ${g.dietary?`<div class="detail-section"><div class="detail-label">Dietary</div><div class="detail-val" style="color:#dc2626;font-weight:500">${g.dietary}</div></div>`:''}
-        ${g.surf?`<div class="detail-section"><div class="detail-label">Surf</div><div class="detail-val">Booked – confirm slot with Boathouse</div></div>`:''}
-        ${g.notes?`<div class="detail-section"><div class="detail-label">GK Notes</div><div class="detail-val">${g.notes}</div></div>`:''}
+        ${acts.length > 0 ? `<div class="detail-section"><div class="detail-label">Today's activities</div>${acts.map(a => `<div class="detail-val">· ${a}</div>`).join('')}</div>` : ''}
+        ${g.dietary ? `<div class="detail-section"><div class="detail-label">Dietary</div><div class="detail-val" style="color:#dc2626;font-weight:500">${g.dietary}</div></div>` : ''}
+        ${g.surf ? `<div class="detail-section"><div class="detail-label">Surf</div><div class="detail-val">Booked – confirm slot with Boathouse</div></div>` : ''}
+        ${g.notes ? `<div class="detail-section"><div class="detail-label">GK Notes</div><div class="detail-val">${g.notes}</div></div>` : ''}
       </div>
     </div>`;
   }).join('');
 }
 
-function toggleCard(i){
-  const d=document.getElementById('detail-'+i);
-  const c=document.getElementById('chev-'+i);
-  const open=d.classList.contains('open');
-  d.classList.toggle('open',!open);
-  c.style.transform=open?'':'rotate(180deg)';
+function formatDate(d) {
+  // Returns "13-Mar-26" style to match sheet format
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const day = String(d.getDate()).padStart(2,'0');
+  const mon = months[d.getMonth()];
+  const yr = String(d.getFullYear()).slice(2);
+  return `${day}-${mon}-${yr}`;
 }
 
-function renderHandover(){
-  const gk=document.getElementById('gk-select').value;
-  const villas=guestData.filter(g=>g.gk===gk);
-  const flags=villas.flatMap(g=>g.alerts.map(a=>({villa:g.villa,guest:g.guest,...a})));
-  const panel=document.getElementById('handover-panel');
-  if(flags.length===0){panel.innerHTML='<div class="empty-state" style="padding:16px">No active flags to hand over. ✓</div>';return;}
-  panel.innerHTML=`<div class="section-card" style="margin-top:8px"><div class="section-body">
+function toggleCard(i) {
+  const d = document.getElementById('detail-'+i);
+  const c = document.getElementById('chev-'+i);
+  const open = d.classList.contains('open');
+  d.classList.toggle('open', !open);
+  c.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+function setShift(s) {
+  currentShift = s;
+  document.getElementById('btn-morning').classList.toggle('active', s==='morning');
+  document.getElementById('btn-afternoon').classList.toggle('active', s==='afternoon');
+}
+
+function renderHandover() {
+  const gk = document.getElementById('gk-select').value;
+  const villas = liveGuests.filter(g => g.gk_pair === gk);
+  const flags = villas.flatMap(g => g.alerts.map(a => ({villa:g.villa, guest:g.guest_name, ...a})));
+  const panel = document.getElementById('handover-panel');
+  if (flags.length === 0) {
+    panel.innerHTML = '<div class="empty-state" style="padding:16px">No active flags to hand over. ✓</div>';
+    return;
+  }
+  panel.innerHTML = `<div class="section-card" style="margin-top:8px"><div class="section-body">
     <div class="detail-label" style="margin-bottom:10px">Active flags for incoming shift</div>
-    ${flags.map(f=>`<div class="alert-pill ${f.l}" style="margin-bottom:6px"><strong>${f.villa} · ${f.guest}</strong><br>${f.msg}</div>`).join('')}
+    ${flags.map(f => `<div class="alert-pill ${f.l}" style="margin-bottom:6px"><strong>${f.villa} · ${f.guest}</strong><br>${f.msg}</div>`).join('')}
   </div></div>`;
 }
 
-// ── HIGHLIGHTS ───────────────────────────────────────────────────
-function renderHighlights(){
-  const h=highlights[DAY_IDX];
-  const events=Object.values(h).sort((a,b)=>{
-    const toM=t=>{const p=t.toLowerCase().match(/(\d+):(\d+)\s*(am|pm)/);if(!p)return 999;let hr=+p[1],min=+p[2];if(p[3]==='pm'&&hr<12)hr+=12;if(p[3]==='am'&&hr===12)hr=0;return hr*60+min;};
+// ── HIGHLIGHTS ─────────────────────────────────────────────
+function renderHighlights() {
+  const h = highlights[DAY_IDX];
+  const events = Object.values(h).sort((a,b) => {
+    const toM = t => {
+      const p = t.toLowerCase().match(/(\d+):(\d+)\s*(am|pm)/);
+      if (!p) return 999;
+      let hr=+p[1],min=+p[2];
+      if(p[3]==='pm'&&hr<12)hr+=12;
+      if(p[3]==='am'&&hr===12)hr=0;
+      return hr*60+min;
+    };
     return toM(a.t)-toM(b.t);
   });
-  const icons={'Breakfast':'fa-coffee','Lunch':'fa-sun','Dinner':'fa-utensils','Party':'fa-utensils'};
-  const getIcon=n=>{if(n.toLowerCase().includes('breakfast'))return'fa-coffee';if(n.toLowerCase().includes('dinner'))return'fa-utensils';if(n.toLowerCase().includes('padel'))return'fa-table-tennis';if(n.toLowerCase().includes('bike'))return'fa-bicycle';if(n.toLowerCase().includes('trek')||n.toLowerCase().includes('trail'))return'fa-hiking';if(n.toLowerCase().includes('tour')||n.toLowerCase().includes('village')||n.toLowerCase().includes('carving')||n.toLowerCase().includes('weaving')||n.toLowerCase().includes('story'))return'fa-landmark';if(n.toLowerCase().includes('horse')||n.toLowerCase().includes('pony'))return'fa-horse-head';if(n.toLowerCase().includes('class')||n.toLowerCase().includes('english')||n.toLowerCase().includes('garden'))return'fa-chalkboard-teacher';return'fa-star';};
-  document.getElementById('highlights-content').innerHTML=`
+  const getIcon = n => {
+    if(n.toLowerCase().includes('breakfast'))return'fa-coffee';
+    if(n.toLowerCase().includes('dinner'))return'fa-utensils';
+    if(n.toLowerCase().includes('padel'))return'fa-table-tennis';
+    if(n.toLowerCase().includes('bike'))return'fa-bicycle';
+    if(n.toLowerCase().includes('trek')||n.toLowerCase().includes('trail'))return'fa-hiking';
+    if(n.toLowerCase().includes('tour')||n.toLowerCase().includes('village')||n.toLowerCase().includes('carving')||n.toLowerCase().includes('weaving')||n.toLowerCase().includes('story'))return'fa-landmark';
+    if(n.toLowerCase().includes('horse')||n.toLowerCase().includes('pony'))return'fa-horse-head';
+    if(n.toLowerCase().includes('class')||n.toLowerCase().includes('english')||n.toLowerCase().includes('garden'))return'fa-chalkboard-teacher';
+    return'fa-star';
+  };
+  document.getElementById('highlights-content').innerHTML = `
     <div class="section-card">
       <div style="padding:14px 16px;font-weight:600;font-size:14px;border-bottom:1px solid #f0f0f0">${DAY_NAMES[DAY_IDX]}'s Programme</div>
       <div class="section-body">${events.map(e=>`
@@ -472,63 +626,63 @@ function renderHighlights(){
     </div>`;
 }
 
-// ── CHECKLIST ────────────────────────────────────────────────────
-function buildChecklist(containerId,tasks){
-  const el=document.getElementById(containerId);
-  Object.keys(tasks).forEach(cat=>{
-    el.innerHTML+=`<div class="cat-title">${cat}</div>`;
-    tasks[cat].forEach((task,i)=>{
-      const id=`${containerId}-${cat}-${i}`;
-      el.innerHTML+=`<div class="checklist-item"><input type="checkbox" id="${id}"><label for="${id}">${task}</label></div>`;
+// ── CHECKLIST ───────────────────────────────────────────────
+function buildChecklist(containerId, tasks) {
+  const el = document.getElementById(containerId);
+  Object.keys(tasks).forEach(cat => {
+    el.innerHTML += `<div class="cat-title">${cat}</div>`;
+    tasks[cat].forEach((task,i) => {
+      const id = `${containerId}-${cat}-${i}`;
+      el.innerHTML += `<div class="checklist-item"><input type="checkbox" id="${id}"><label for="${id}">${task}</label></div>`;
     });
   });
 }
 
-// ── MESSAGES ─────────────────────────────────────────────────────
-function buildArrivalMessages(){
-  const msgs=[
+// ── MESSAGES ────────────────────────────────────────────────
+function buildArrivalMessages() {
+  const msgs = [
     {title:'1st Message – Arrival',id:'arr1',content:`Subject: Welcome to Paradise! 🎉\n\nDear [Name] Family,\n\nWelcome to NIHI Sumba! We are absolutely thrilled to have you here.\n\nYour Guest Kapten is here to make everything seamless. Reach us here on WhatsApp or dial ext. 105 from your villa.\n\nDon't miss:\n🌿 Spa Safari at Nihioka: https://nihi.com/wellness/spa-safari/\n🐎 Equine Activities – swim with horses, ride at sunset\n\nFull activities & dining info:\nhttps://nihi.com/linktree-roomdirectory/\n\nWarm regards,\nGK [NAME]`},
     {title:'2nd Message – Dining Schedule',id:'arr2',content:`Hi Ibu/Bapak!\n\nHope you're settling in nicely! ✨\n\nJust wanted to share our Dining Schedule for your convenience – timings for breakfast, lunch & dinner.\n\nWarm regards,\nGK [NAME]`},
     {title:'3rd Message – First Morning',id:'arr3',content:`Hi Ibu/Bapak!\n\nGood morning! Hope you had a wonderful first night. ☀️\n\nHere are additional activities you can explore at your own pace:\n\n🥾 Trekking Tours · 🌱 Garden Tour · 🎾 Padel & Pickleball (6am–6pm) · 🌍 Sumba Foundation Tour (Mon & Fri 10am) · 🐢 Turtle Release (when available) · 🏖️ Beach Walk (low tide) · 🍫 Charly's Chocolate Factory (9am–5pm) · 🐴 Sandalwood Stables Tour (6am–6pm) · 🧘 Daily Yoga (except Fri) · 🧵 Weaving Class (9am–4pm)\n\nI am always here to help add any of these to your day!\n\nWarm regards,\nGK [NAME]`},
   ];
-  const el=document.getElementById('arrival-messages');
-  msgs.forEach(m=>{
-    el.innerHTML+=`<details style="margin-bottom:8px"><summary style="cursor:pointer;font-size:13px;font-weight:500;padding:8px 0;list-style:none">${m.title}</summary>
+  const el = document.getElementById('arrival-messages');
+  msgs.forEach(m => {
+    el.innerHTML += `<details style="margin-bottom:8px"><summary style="cursor:pointer;font-size:13px;font-weight:500;padding:8px 0;list-style:none">${m.title}</summary>
       <div class="template-text" id="${m.id}" style="margin-top:8px">${m.content}</div>
       <button class="copy-btn" onclick="copyText('${m.id}',this)"><i class="fas fa-copy"></i> Copy</button>
     </details>`;
   });
 }
 
-function buildInvitations(){
-  const tabs=document.getElementById('inv-tabs');
-  const panels=document.getElementById('inv-panels');
-  invitations.forEach((inv,i)=>{
-    const tab=document.createElement('button');
-    tab.className='inv-tab'+(i===DAY_IDX?' active':'');
-    tab.textContent=inv.day;
-    tab.onclick=()=>{
+function buildInvitations() {
+  const tabs = document.getElementById('inv-tabs');
+  const panels = document.getElementById('inv-panels');
+  invitations.forEach((inv,i) => {
+    const tab = document.createElement('button');
+    tab.className = 'inv-tab'+(i===DAY_IDX?' active':'');
+    tab.textContent = inv.day;
+    tab.onclick = () => {
       document.querySelectorAll('.inv-tab').forEach(t=>t.classList.remove('active'));
       document.querySelectorAll('.inv-panel').forEach(p=>p.classList.remove('active'));
       tab.classList.add('active');
       document.getElementById('inv-panel-'+i).classList.add('active');
     };
     tabs.appendChild(tab);
-    const panel=document.createElement('div');
-    panel.id='inv-panel-'+i;
-    panel.className='inv-panel'+(i===DAY_IDX?' active':'');
-    panel.innerHTML=`<div style="font-weight:600;font-size:13px;margin-bottom:8px">${inv.title}</div>
+    const panel = document.createElement('div');
+    panel.id = 'inv-panel-'+i;
+    panel.className = 'inv-panel'+(i===DAY_IDX?' active':'');
+    panel.innerHTML = `<div style="font-weight:600;font-size:13px;margin-bottom:8px">${inv.title}</div>
       <div class="template-text" id="inv-txt-${i}">${inv.content}</div>
       <button class="copy-btn" onclick="copyText('inv-txt-${i}',this)"><i class="fas fa-copy"></i> Copy</button>`;
     panels.appendChild(panel);
   });
 }
 
-// ── ACTIVITIES ───────────────────────────────────────────────────
-function buildActivityTemplates(){
-  const el=document.getElementById('activity-templates');
-  const sorted=[...activityTemplates].sort((a,b)=>a.title.localeCompare(b.title));
-  el.innerHTML=sorted.map(t=>`
+// ── ACTIVITIES ──────────────────────────────────────────────
+function buildActivityTemplates() {
+  const el = document.getElementById('activity-templates');
+  const sorted = [...activityTemplates].sort((a,b) => a.title.localeCompare(b.title));
+  el.innerHTML = sorted.map(t => `
     <div class="section-card">
       <details>
         <summary>${t.title} <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
@@ -540,10 +694,10 @@ function buildActivityTemplates(){
     </div>`).join('');
 }
 
-// ── KNOWLEDGE ────────────────────────────────────────────────────
-function buildKnowledge(){
-  const el=document.getElementById('knowledge-content');
-  el.innerHTML=knowledge.map(cat=>`
+// ── KNOWLEDGE ───────────────────────────────────────────────
+function buildKnowledge() {
+  const el = document.getElementById('knowledge-content');
+  el.innerHTML = knowledge.map(cat => `
     <div class="section-card">
       <details>
         <summary><i class="fas ${cat.icon}" style="color:${cat.color};margin-right:8px"></i>${cat.cat} <span class="chevron"><i class="fas fa-chevron-down"></i></span></summary>
@@ -556,31 +710,247 @@ function buildKnowledge(){
       </details>
     </div>`).join('');
 
-  const el2=document.getElementById('culinary-content');
-  el2.innerHTML=culinary.map(r=>`<div class="dining-card"><div class="dining-name">${r.name}</div>${r.details.map(d=>`<div class="dining-detail">· ${d}</div>`).join('')}</div>`).join('')
-  +'<div style="font-weight:600;font-size:13px;margin:14px 0 8px">Weekly Themed Dining</div>'
-  +weeklyDining.map(d=>`<div class="dining-card"><div class="dining-name">${d.day} · ${d.name}</div><div class="dining-detail">⏰ ${d.time}</div><div class="dining-detail">${d.desc}</div></div>`).join('');
+  const el2 = document.getElementById('culinary-content');
+  el2.innerHTML = culinary.map(r => `<div class="dining-card"><div class="dining-name">${r.name}</div>${r.details.map(d=>`<div class="dining-detail">· ${d}</div>`).join('')}</div>`).join('')
+    + '<div style="font-weight:600;font-size:13px;margin:14px 0 8px">Weekly Themed Dining</div>'
+    + weeklyDining.map(d => `<div class="dining-card"><div class="dining-name">${d.day} · ${d.name}</div><div class="dining-detail">⏰ ${d.time}</div><div class="dining-detail">${d.desc}</div></div>`).join('');
 }
 
-// ── LINKS ─────────────────────────────────────────────────────────
-function buildLinks(){
-  document.getElementById('links-grid').innerHTML=links.map(l=>`
+// ── BOOKINGS ─────────────────────────────────────────────────────
+function renderBookings() {
+  const gk  = document.getElementById('gk-select').value;
+  const el  = document.getElementById('bookings-content');
+  const today = formatDate(TODAY);
+
+  const mine = liveActivities.filter(a => {
+    const pair = (a.gk_pair || '').toString().trim();
+    return pair.toLowerCase() === gk.toLowerCase();
+  });
+
+  if (mine.length === 0) {
+    el.innerHTML = `<div class="bookings-date">${DAY_NAMES[DAY_IDX]}, ${today}</div>
+      <div class="empty-state">No activity bookings for this pair today.<br><span style="font-size:11px">GEM updates this tab each morning.</span></div>`;
+    return;
+  }
+
+  const timeToMins = t => {
+    if (!t) return 9999;
+    const s = String(t).trim().toLowerCase();
+    const m = s.match(/(\d+):(\d+)\s*(am|pm)?/);
+    if (!m) return 9999;
+    let h = parseInt(m[1]), min = parseInt(m[2]);
+    if (m[3] === 'pm' && h < 12) h += 12;
+    if (m[3] === 'am' && h === 12) h = 0;
+    return h * 60 + min;
+  };
+  mine.sort((a, b) => timeToMins(a.time) - timeToMins(b.time));
+
+  const cards = mine.map(a => {
+    const hasMeal  = a.meal_req && a.meal_req !== 'N/A' && a.meal_req !== '';
+    const hasNote  = a.special_notes && a.special_notes !== 'N/A' && a.special_notes !== '';
+    const reconf   = (a['reconfirmed?'] || a.reconfirmed_ || '').toString().trim().toLowerCase();
+    const reconfHTML = reconf
+      ? `<span class="booking-reconf ${reconf === 'yes' ? 'yes' : 'no'}">${reconf === 'yes' ? '✓ Reconfirmed' : '⚠ Not reconfirmed'}</span>`
+      : '';
+    const borderClass = hasNote ? 'special' : hasMeal ? 'meal' : '';
+    return `<div class="booking-card ${borderClass}">
+      <div class="booking-time">${a.time || 'TBA'}</div>
+      <div class="booking-activity">${a.activity || ''}</div>
+      <div class="booking-guest">${a.guest_name || ''}</div>
+      <div class="booking-meta">${a.villa ? a.villa + ' · ' : ''}${a.pax ? a.pax + ' pax' : ''}</div>
+      ${hasMeal  ? `<div class="booking-meal">🍽 ${a.meal_req}</div>` : ''}
+      ${hasNote  ? `<div class="booking-note">⚠️ ${a.special_notes}</div>` : ''}
+      ${reconfHTML}
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="bookings-date">${DAY_NAMES[DAY_IDX]}, ${today} · ${mine.length} booking${mine.length !== 1 ? 's' : ''}</div>${cards}`;
+}
+
+// ── LINKS ───────────────────────────────────────────────────
+function buildLinks() {
+  document.getElementById('links-grid').innerHTML = links.map(l => `
     <div class="link-card">
       <div class="link-label">Link</div>
       <a href="${l.url}" target="_blank">${l.label} ↗</a>
     </div>`).join('');
 }
 
-// ── INIT ──────────────────────────────────────────────────────────
-renderDashboard();
+// ── HELPERS ─────────────────────────────────────────────────
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function copyText(id, btn) {
+  const txt = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(txt).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML='<i class="fas fa-copy"></i> Copy'; }, 2000);
+  });
+}
+
+// ── AUTO REFRESH every 3 minutes ────────────────────────────
+setInterval(() => fetchLiveData(), 3 * 60 * 1000);
+
+// ── OFFLINE DETECTION ────────────────────────────────────────
+const offlineBanner = document.getElementById('offline-banner');
+function updateOnlineStatus() {
+  if (!navigator.onLine) {
+    offlineBanner.classList.add('show');
+    setSyncStatus('error', 'Offline');
+  } else {
+    offlineBanner.classList.remove('show');
+  }
+}
+window.addEventListener('online', () => { updateOnlineStatus(); fetchLiveData(true); });
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// ── GUEST DATA CACHE (localStorage) ─────────────────────────
+const GUEST_CACHE_KEY = 'gk_guest_cache';
+const GUEST_CACHE_TS  = 'gk_guest_cache_ts';
+
+function saveGuestCache(guests, pairs) {
+  try {
+    localStorage.setItem(GUEST_CACHE_KEY, JSON.stringify({guests, pairs, activities: liveActivities}));
+    localStorage.setItem(GUEST_CACHE_TS, new Date().toISOString());
+  } catch(e) {}
+}
+
+function loadGuestCache() {
+  try {
+    const raw = localStorage.getItem(GUEST_CACHE_KEY);
+    const ts  = localStorage.getItem(GUEST_CACHE_TS);
+    if (!raw) return null;
+    return { data: JSON.parse(raw), ts: ts ? new Date(ts) : null };
+  } catch(e) { return null; }
+}
+
+// Patch fetchLiveData to cache successful responses
+const _origFetch = fetchLiveData;
+async function fetchLiveData(force = false) {
+  if (!SHEETS_API_URL) {
+    setSyncStatus('demo', 'Demo mode');
+    useData(DEMO_GUESTS, DEMO_GK_PAIRS);
+    renderConfigBanner();
+    return;
+  }
+
+  if (!navigator.onLine) {
+    const cache = loadGuestCache();
+    if (cache) {
+      const ago = cache.ts ? Math.round((Date.now() - cache.ts) / 60000) + ' min ago' : 'earlier';
+      setSyncStatus('error', 'Offline · cached ' + ago);
+      document.getElementById('last-updated-text').textContent = 'Cached data from ' + ago;
+      liveActivities = cache.data.activities || [];
+      useData(cache.data.guests, cache.data.pairs);
+    } else {
+      setSyncStatus('error', 'Offline – no cache');
+      useData(DEMO_GUESTS, DEMO_GK_PAIRS);
+    }
+    return;
+  }
+
+  setSyncStatus('loading', 'Syncing…');
+
+  try {
+    const res = await fetch(SHEETS_API_URL + (SHEETS_API_URL.includes('?') ? '&' : '?') + '_t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    const guests = (data.guests || []).map(normaliseGuest);
+    const pairs  = (data.gkPairs || []).map(r => r.pair_name || r.name || Object.values(r)[0]).filter(Boolean);
+    liveActivities = data.activities || [];
+
+    liveGuests  = guests;
+    liveGKPairs = pairs.length ? pairs : [...new Set(guests.map(g => g.gk_pair).filter(Boolean))];
+    lastFetched = new Date();
+    dataLoaded  = true;
+
+    // Save to cache for offline use
+    saveGuestCache(liveGuests, liveGKPairs);
+
+    setSyncStatus('live', 'Live · ' + lastFetched.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}));
+    document.getElementById('last-updated-text').textContent = 'Updated ' + lastFetched.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    useData(liveGuests, liveGKPairs);
+
+  } catch (err) {
+    console.error('Fetch error:', err);
+    const cache = loadGuestCache();
+    if (cache) {
+      const ago = cache.ts ? Math.round((Date.now() - cache.ts) / 60000) + ' min ago' : 'earlier';
+      setSyncStatus('error', 'Offline · cached ' + ago);
+      document.getElementById('last-updated-text').textContent = 'Cached data from ' + ago;
+      liveActivities = cache.data.activities || [];
+      useData(cache.data.guests, cache.data.pairs);
+    } else {
+      setSyncStatus('error', 'Cannot connect');
+      useData(DEMO_GUESTS, DEMO_GK_PAIRS);
+      document.getElementById('last-updated-text').textContent = 'Could not reach Sheet – showing demo data';
+    }
+  }
+}
+
+// ── SERVICE WORKER (caches the app shell for offline use) ────
+if ('serviceWorker' in navigator) {
+  const swCode = `
+const CACHE = 'gk-northstar-v1';
+const SHELL = [
+  self.location.href,
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-solid-900.woff2',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-regular-400.woff2',
+];
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL).catch(()=>{})));
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+  ));
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', e => {
+  // Never intercept the Google Sheets API call — always try network first
+  if (e.request.url.includes('script.google.com')) {
+    e.respondWith(fetch(e.request).catch(() => new Response('', {status: 503})));
+    return;
+  }
+  // App shell: cache-first
+  e.respondWith(
+    caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
+      const clone = res.clone();
+      caches.open(CACHE).then(c => c.put(e.request, clone));
+      return res;
+    }).catch(() => cached || new Response('Offline', {status: 503})))
+  );
+});
+`;
+  const blob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(e => console.warn('SW:', e));
+}
+
+// ── INIT ────────────────────────────────────────────────────
 renderHighlights();
-buildChecklist('am-checklist',amTasks);
-buildChecklist('pm-checklist',pmTasks);
+buildChecklist('am-checklist', amTasks);
+buildChecklist('pm-checklist', pmTasks);
 buildArrivalMessages();
 buildInvitations();
 buildActivityTemplates();
 buildKnowledge();
 buildLinks();
+renderConfigBanner();
+fetchLiveData();
 </script>
 </body>
 </html>
